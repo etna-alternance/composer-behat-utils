@@ -1,0 +1,38 @@
+{
+    "name": "etna/composer-behat-coverage",
+    "description": "ETNA Behat Coverage",
+    "keywords": ["Behat", "coverage"],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "ETNA",
+            "email": "dev@etna-alternance.net",
+            "homepage": "http://etna-alternance.net"
+        }
+    ],
+    "require": {
+        "behat/behat": "2.x@stable",
+        "gquemener/behat-analysis-extension": "~1.0",
+        "phpunit/php-code-coverage": "2.0.*@dev",
+        "phpunit/phpcov": "2.0.*@dev"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-2": {
+            "ETNA\\FeatureContext\\Coverage": "src"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "repositories": [
+       {
+           "type": "composer",
+           "url": "http://blu-composer.herokuapp.com"
+       }
+   ]
+}
