@@ -1,7 +1,7 @@
 {
-    "name": "etna/composer-behat-coverage",
-    "description": "ETNA Behat Coverage",
-    "keywords": ["Behat", "coverage"],
+    "name": "etna/composer-behat-utils",
+    "description": "ETNA Behat utils",
+    "keywords": ["Behat", "utils"],
     "license": "proprietary",
     "authors": [
         {
@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-2": {
-            "ETNA\\FeatureContext\\Coverage": "src"
+            "ETNA\\FeatureContext": "src"
         }
     },
     "extra": {
