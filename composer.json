@@ -20,8 +20,8 @@
         "bin-dir": "bin"
     },
     "autoload": {
-        "psr-2": {
-            "ETNA\\FeatureContext": "src"
+        "psr-0": {
+            "ETNA\\FeatureContext\\BehatCoverage": "src"
         }
     },
     "extra": {
