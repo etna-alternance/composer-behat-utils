@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-0": {
-            "ETNA\\FeatureContext\\BehatCoverage": "src"
+            "ETNA\\FeatureContext": "src"
         }
     },
     "extra": {
@@ -32,7 +32,7 @@
     "repositories": [
        {
            "type": "composer",
-           "url": "http://blu-composer.herokuapp.com"
+           "url":  "http://blu-composer.herokuapp.com"
        }
    ]
 }
