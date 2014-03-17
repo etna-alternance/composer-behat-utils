@@ -21,6 +21,14 @@ trait Coverage
         self::$_parameters = $event->getContextParameters();
 
         if (isset(self::$_parameters['enableCodeCoverage']) && self::$_parameters['enableCodeCoverage']) {
+            if (isset(self::$_parameters['coveragePath'])) {
+                echo "No coveragePath provided\n";
+                die("Error with Coverage : l." . (__LINE__ - 2));
+            }
+            if (!file_exists(getcwd() . '/' . self::$_parameters['coveragePath'])) {
+                mkdir(getcwd() . '/' . self::$_parameters['coveragePath'], 0777, true);
+            }
+
             $filter = new PHP_CodeCoverage_Filter();
             if (isset(self::$_parameters['blacklist']) && is_array(self::$_parameters['blacklist'])) {
                 foreach (self::$_parameters['blacklist'] as $blackElem) {

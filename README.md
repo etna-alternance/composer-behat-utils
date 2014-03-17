@@ -17,7 +17,6 @@ In your composer.json :
 
 Install
 -----------------------
- * You must have a tmp/behat directory in you project.
  * Add to your FeatureContext.php file :
 ```
      use ETNA\FeatureContext\Coverage;
@@ -57,16 +56,16 @@ ci:
             enableCodeCoverage: true
 
             # Path to store the generated code coverage report
-            coveragePath: ./../../../tmp/behat/coverage
+            coveragePath: /tmp/behat/coverage
 
             # White list of directories to collect coverage about
             whitelist:
-                - ./../../../app
+                - app
             # Black list of directories to not collect coverage about
             blacklist:
-                - ./../../../tmp
-                - ./../../../features
-                - ./../../../bin
+                - tmp
+                - features
+                - bin
 ```
 
 Run
