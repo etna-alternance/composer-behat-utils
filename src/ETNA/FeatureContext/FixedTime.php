@@ -6,8 +6,10 @@ use Behat\Behat\Event\SuiteEvent;
 
 function fake_time()
 {
-    return real_strtotime(self::$_date);
+    global $custom_date;
+    return real_strtotime($custom_date);
 }
+
 function fake_date($format, $timestamp = null)
 {
     if ($timestamp === null) {
@@ -15,6 +17,7 @@ function fake_date($format, $timestamp = null)
     }
     return real_date($format, $timestamp);
 }
+
 function fake_strtotime($time, $now = null)
 {
     if ($now === null) {
@@ -25,7 +28,6 @@ function fake_strtotime($time, $now = null)
 
 trait FixedTime
 {
-    static private $_parameters;
     static private $_date;
 
     /**
@@ -33,10 +35,11 @@ trait FixedTime
      */
     public static function blackMagicBeforeSuite(SuiteEvent $event)
     {
-        self::$_parameters = $event->getContextParameters();
+        $parameters = $event->getContextParameters();
 
-        if (isset(self::$_parameters['customDate']) && self::$_parameters['customDate']) {
-            self::$_date = self::$_parameters['customDate'];
+        if (isset($parameters['customDate']) && $parameters['customDate']) {
+            global $custom_date;
+            $custom_date = $parameters['customDate'];
 
             $rename = function ($name) {
                 runkit_function_rename($name, "real_{$name}");

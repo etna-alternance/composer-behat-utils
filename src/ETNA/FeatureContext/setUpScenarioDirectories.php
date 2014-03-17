@@ -10,15 +10,11 @@ trait setUpScenarioDirectories
     public function setUpScenarioDirectories($event)
     {
         if ($event instanceof \Behat\Behat\Event\ScenarioEvent) {
-            $path                = realpath(dirname($event->getScenario()->getFile())) . '/results/';
-            $this->results_path  = $path;
-            $requests            = realpath(dirname($event->getScenario()->getFile())) . '/requests/';
-            $this->requests_path = $requests;
+            $this->results_path  = realpath(dirname($event->getScenario()->getFile())) . '/results/';
+            $this->requests_path = realpath(dirname($event->getScenario()->getFile())) . '/requests/';
         } else {
-            $path                = realpath(dirname($event->getOutline()->getFile())) . '/results/';
-            $this->results_path  = $path;
-            $requests            = realpath(dirname($event->getOutline()->getFile())) . '/requests/';
-            $this->requests_path = $requests;
+            $this->results_path  = realpath(dirname($event->getOutline()->getFile())) . '/results/';
+            $this->requests_path = realpath(dirname($event->getOutline()->getFile())) . '/requests/';
         }
     }
 }

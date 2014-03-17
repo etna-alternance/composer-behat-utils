@@ -11,7 +11,7 @@ trait RSA
      */
     public static function setUpRSA()
     {
-        @unlink(__DIR__ . "/../../../tmp/public-" . getenv("APPLICATION_ENV") . ".key");
+        @unlink(getcwd() . "/tmp/public-" . getenv("APPLICATION_ENV") . ".key");
 
         passthru("[ -d tmp/keys ] || mkdir -p tmp/keys", $return);
         if ($return) {
@@ -26,7 +26,7 @@ trait RSA
             die("Error with RSA : l." . (__LINE__ - 2));
         }
 
-        self::$rsa = \ETNA\RSA\RSA::loadPrivateKey(realpath(__DIR__ . "/../../../tmp/keys/private.key"));
+        self::$rsa = \ETNA\RSA\RSA::loadPrivateKey(realpath(getcwd() . "/tmp/keys/private.key"));
     }
 
     /**
@@ -34,6 +34,6 @@ trait RSA
      */
     public static function tearDownRSA()
     {
-        @unlink(__DIR__ . "/../../../tmp/public.key");
+        @unlink(getcwd() . "/tmp/public.key");
     }
 }
