@@ -24,13 +24,13 @@ trait Coverage
             $filter = new PHP_CodeCoverage_Filter();
             if (isset(self::$_parameters['blacklist']) && is_array(self::$_parameters['blacklist'])) {
                 foreach (self::$_parameters['blacklist'] as $blackElem) {
-                    $filter->addDirectoryToBlacklist(__DIR__ . "/{$blackElem}");
+                    $filter->addDirectoryToBlacklist(getcwd() . "/{$blackElem}");
                 }
             }
 
             if (isset(self::$_parameters['whitelist']) && is_array(self::$_parameters['whitelist'])) {
                 foreach (self::$_parameters['whitelist'] as $whiteElem) {
-                    $filter->addDirectoryToWhitelist(__DIR__ . "/{$whiteElem}");
+                    $filter->addDirectoryToWhitelist(getcwd() . "/{$whiteElem}");
                 }
             }
             self::$_coverage = new PHP_CodeCoverage(null, $filter);
@@ -47,10 +47,10 @@ trait Coverage
             self::$_coverage->stop();
 
             $writer = new PHP_CodeCoverage_Report_PHP;
-            $writer->process(self::$_coverage, __DIR__ . '/' . self::$_parameters['coveragePath'] . microtime(true) . ".php");
+            $writer->process(self::$_coverage, getcwd() . '/' . self::$_parameters['coveragePath'] . microtime(true) . ".php");
 
             $writer = new PHP_CodeCoverage_Report_HTML;
-            $writer->process(self::$_coverage, __DIR__ . '/' . self::$_parameters['coveragePath']);
+            $writer->process(self::$_coverage, getcwd() . '/' . self::$_parameters['coveragePath']);
         }
     }
 }
