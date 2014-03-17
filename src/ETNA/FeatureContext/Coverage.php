@@ -8,7 +8,7 @@ use PHP_CodeCoverage;
 use PHP_CodeCoverage_Report_PHP;
 use PHP_CodeCoverage_Report_HTML;
 
-trait BehatCoverage
+trait Coverage
 {
     static private $_coverage;
     static private $_parameters;
