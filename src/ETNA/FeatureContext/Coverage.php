@@ -59,6 +59,8 @@ trait Coverage
 
             $writer = new PHP_CodeCoverage_Report_HTML;
             $writer->process(self::$_coverage, getcwd() . '/' . self::$_parameters['coveragePath']);
+
+            exec("open " . getcwd() . '/' . self::$_parameters['coveragePath'] . "/index.html");
         }
     }
 }
