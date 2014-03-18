@@ -21,7 +21,7 @@ trait Coverage
         self::$_parameters = $event->getContextParameters();
 
         if (isset(self::$_parameters['enableCodeCoverage']) && self::$_parameters['enableCodeCoverage']) {
-            if (isset(self::$_parameters['coveragePath'])) {
+            if (!isset(self::$_parameters['coveragePath'])) {
                 echo "No coveragePath provided\n";
                 die("Error with Coverage : l." . (__LINE__ - 2));
             }
