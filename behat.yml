@@ -14,11 +14,19 @@ default:
         bootstrap: %behat.paths.features%/bootstrap
     extensions:
             Behat\AnalysisExtension\Extension: ~
+    context:
+        parameters:
+            # Date for the test
+            customDate: "2013-11-13 14:42:42"
 wip:
     filters:
         tags:       "@wip"
     formatter:
         name:       progress
+    context:
+        parameters:
+            # Date for the test
+            customDate: "2013-11-13 14:42:42"
 ci:
     formatter:
         name:       progress,junit,html
@@ -27,6 +35,9 @@ ci:
 
     context:
         parameters:
+            # Date for the test
+            customDate: "2013-11-13 14:42:42"
+
             # Whether or not to collect code coverage
             enableCodeCoverage: true
 
