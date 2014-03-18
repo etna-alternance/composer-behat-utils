@@ -11,7 +11,6 @@ use PHP_CodeCoverage_Report_HTML;
 trait Coverage
 {
     static private $_coverage;
-    static private $_parameters;
 
     /**
      * @BeforeSuite

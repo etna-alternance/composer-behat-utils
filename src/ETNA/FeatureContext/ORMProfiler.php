@@ -13,11 +13,12 @@ trait ORMProfiler
     public function resetProfiler()
     {
         self::$currentQuery += self::$silex_app["orm.profiler"]->currentQuery;
-
-        self::$max_queries = 10;
-
         self::$silex_app["orm.profiler"]->queries      = [];
         self::$silex_app["orm.profiler"]->currentQuery = 0;
+        self::$max_queries = 10;
+        if (isset(self::$_parameters['maxQueries']) && self::$_parameters['maxQueries']) {
+            self::$max_queries = self::$_parameters['maxQueries'];
+        }
     }
 
     /**
