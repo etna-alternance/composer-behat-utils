@@ -52,4 +52,24 @@ trait FixedTime
             echo "You don't have customDate in your behat parameters\n";
         }
     }
+
+    /**
+     * @Given /^que la date est "([^"]*)"$/
+     */
+    public function queLaDateEst($new_date)
+    {
+        global $custom_date;
+
+        $custom_date = $new_date;
+    }
+
+    /**
+     * @Given /^je rollback la date$/
+     */
+    public function jeRollbackLaDate()
+    {
+        global $custom_date;
+
+        $custom_date = self::$_parameters['customDate'];
+    }
 }
