@@ -7,6 +7,7 @@ use PHP_CodeCoverage_Filter;
 use PHP_CodeCoverage;
 use PHP_CodeCoverage_Report_PHP;
 use PHP_CodeCoverage_Report_HTML;
+use PHP_CodeCoverage_Report_Clover;
 
 trait Coverage
 {
@@ -58,6 +59,9 @@ trait Coverage
 
             $writer = new PHP_CodeCoverage_Report_HTML;
             $writer->process(self::$_coverage, getcwd() . '/' . self::$_parameters['coveragePath']);
+
+            $writer = new PHP_CodeCoverage_Report_Clover();
+            $writer->process(self::$_coverage, getcwd() . '/' . self::$_parameters['coveragePath'] . '.clover.xml');
 
             exec("open " . getcwd() . '/' . self::$_parameters['coveragePath'] . "/index.html");
         }
