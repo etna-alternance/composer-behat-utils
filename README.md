@@ -1,6 +1,8 @@
 composer-behat-coverage
 =======================
 
+[![Dependency Status](https://www.versioneye.com/user/projects/53dde6fe8e78abc19100006d/badge.svg?style=flat)](https://www.versioneye.com/user/projects/53dde6fe8e78abc19100006d)
+
 Composer for php code coverage with behat
 
 Dependencies
