@@ -21,8 +21,8 @@
         "bin-dir": "bin"
     },
     "autoload": {
-        "psr-0": {
-            "ETNA\\FeatureContext": "src"
+        "psr-4": {
+            "ETNA\\FeatureContext\\": "src"
         }
     },
     "extra": {

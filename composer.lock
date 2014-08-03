@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "7c0f687a95cfe0801aae8eaa756a2b8c",
+    "hash": "dd8810c715f54b854d78d0883cc8e87d",
     "packages": [
         {
             "name": "behat/behat",
@@ -1385,6 +1386,9 @@
         "phpunit/php-code-coverage": 20,
         "phpunit/phpcov": 20
     },
-    "platform": [],
+    "prefer-stable": false,
+    "platform": {
+        "php": ">=5.5"
+    },
     "platform-dev": []
 }
