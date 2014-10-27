@@ -80,10 +80,10 @@ checks:
         no_space_before_semicolon: true
         no_space_around_object_operator: true
         no_short_variable_names:
-            minimum: '3'
+            minimum: '2'
         no_short_open_tag: true
         no_short_method_names:
-            minimum: '5'
+            minimum: '4'
         no_mixed_inline_html: true
         no_goto: true
         no_global_keyword: true
