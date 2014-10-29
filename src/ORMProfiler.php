@@ -18,7 +18,7 @@ trait ORMProfiler
         self::$silex_app["orm.profiler"]->currentQuery = 0;
 
         self::$max_queries = 10;
-        if (isset(self::$_parameters['maxQueries']) && self::$_parameters['maxQueries']) {
+        if (true === isset(self::$_parameters['maxQueries']) && self::$_parameters['maxQueries']) {
             self::$max_queries = self::$_parameters['maxQueries'];
         }
     }
@@ -34,7 +34,7 @@ trait ORMProfiler
     /**
      * @Given /^que j\'ai le droit de faire (\d+) requetes SQL$/
      */
-    public function queJAiLeDroitDeFaireRequetesSql($nb)
+    public function queJaiLeDroitDeFaireRequetesSql($nb)
     {
         self::$max_queries = $nb;
     }
