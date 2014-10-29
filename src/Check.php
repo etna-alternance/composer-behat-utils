@@ -61,7 +61,7 @@ trait Coverage
                 return;
             }
 
-            for ($i = 0 ; $i < $expected_count; $i++) {
+            for ($i = 0; $i < $expected_count; $i++) {
                 $this->check($expected_value[$i], $found_value[$i], "{$prefix}[{$i}]", $errors);
             }
             return;
