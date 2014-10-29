@@ -5,6 +5,14 @@ namespace ETNA\FeatureContext;
 trait Coverage
 {
     /**
+     * Valide l'égalité de 2 valeurs ($expected_value & $found_value)
+     *
+     * Le test prendra en considération les tableaux associatifs qui n'auront pas la nécessisité
+     * d'être dans le même ordre, mais devront contenir exactement les mêmes clefs et les mêmes valeurs.
+     *
+     * Il y a aussi quelques exceptions possibles :
+     *  - "key" => "#Array#" : va juste vérifier que la valeur de $expected_value["key"] est bien un tableau
+     *  - "key" => #regex# : va vérifier que la valeur de $expected_value["key"] matche la regexp "regexp"
      * @param string $prefix
      */
     protected function check($expected_value, $found_value, $prefix, &$errors)
@@ -25,22 +33,22 @@ trait Coverage
             return;
         }
 
-        $t1 = gettype($expected_value);
-        $t2 = gettype($found_value);
-        if ($t1 !== $t2) {
-            $errors[] = sprintf("%-35s: type error : expected '%s'; got '%s'", $prefix, $t1, $t2);
+        $expected_type = gettype($expected_value);
+        $found_type    = gettype($found_value);
+        if ($expected_type !== $found_type) {
+            $errors[] = sprintf("%-35s: type error : expected '%s'; got '%s'", $prefix, $expected_type, $found_type);
             return;
         }
 
         if (true === is_array($expected_value)) {
-            $l1 = count($expected_value);
-            $l2 = count($found_value);
-            if ($l1 !== $l2) {
-                $errors[] = sprintf("%-35s: array length error : expected '%d'; got '%d'", $prefix, $l1, $l2);
+            $expected_count = count($expected_value);
+            $found_count    = count($found_value);
+            if ($expected_count !== $found_count) {
+                $errors[] = sprintf("%-35s: array length error : expected '%d'; got '%d'", $prefix, $expected_count, $found_count);
                 return;
             }
 
-            for ($i = 0 ; $i < $l1; $i++) {
+            for ($i = 0 ; $i < $expected_count; $i++) {
                 $this->check($expected_value[$i], $found_value[$i], "{$prefix}[{$i}]", $errors);
             }
             return;
