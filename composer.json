@@ -17,9 +17,6 @@
         "phpunit/php-code-coverage": "2.0.*@dev",
         "phpunit/phpcov": "2.0.*@dev"
     },
-    "config": {
-        "bin-dir": "bin"
-    },
     "autoload": {
         "psr-4": {
             "ETNA\\FeatureContext\\": "src"
