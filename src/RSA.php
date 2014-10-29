@@ -9,21 +9,27 @@ trait RSA
     /**
      * @BeforeSuite
      */
-    public static function setUpRSA()
+    public static function setUpRsa()
     {
-        @unlink(getcwd() . "/tmp/public-" . getenv("APPLICATION_ENV") . ".key");
+        $public_key = getcwd() . "/tmp/public-" . getenv("APPLICATION_ENV") . ".key";
+        if (true === file_exists($public_key)) {
+            unlink($public_key);
+        }
 
         passthru("[ -d tmp/keys ] || mkdir -p tmp/keys", $return);
-        if ($return) {
-            die("Error with RSA : l." . (__LINE__ - 2));
+        if (0 === $return) {
+            throw new \Exception("Error with RSA : l." . (__LINE__ - 2));
         }
         passthru("[ -f tmp/keys/private.key ] || openssl genrsa  -out tmp/keys/private.key 2048", $return);
-        if ($return) {
-            die("Error with RSA : l." . (__LINE__ - 2));
+        if (0 === $return) {
+            throw new \Exception("Error with RSA : l." . (__LINE__ - 2));
         }
-        passthru("[ -f tmp/keys/public.key ]  || openssl rsa -in tmp/keys/private.key -pubout -out tmp/keys/public.key", $return);
-        if ($return) {
-            die("Error with RSA : l." . (__LINE__ - 2));
+        passthru(
+            "[ -f tmp/keys/public.key ]  || openssl rsa -in tmp/keys/private.key -pubout -out tmp/keys/public.key",
+            $return
+        );
+        if (0 === $return) {
+            throw new \Exception("Error with RSA : l." . (__LINE__ - 4));
         }
 
         self::$rsa = \ETNA\RSA\RSA::loadPrivateKey(realpath(getcwd() . "/tmp/keys/private.key"));
@@ -32,8 +38,11 @@ trait RSA
     /**
      * @AfterSuite
      */
-    public static function tearDownRSA()
+    public static function tearDownRsa()
     {
-        @unlink(getcwd() . "/tmp/public.key");
+        $file = getcwd() . "/tmp/public.key";
+        if (true === file_exists($file)) {
+            unlink($file);
+        }
     }
 }
