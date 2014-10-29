@@ -17,18 +17,18 @@ trait RSA
         }
 
         passthru("[ -d tmp/keys ] || mkdir -p tmp/keys", $return);
-        if (0 === $return) {
+        if (0 !== $return) {
             throw new \Exception("Error with RSA : l." . (__LINE__ - 2));
         }
         passthru("[ -f tmp/keys/private.key ] || openssl genrsa  -out tmp/keys/private.key 2048", $return);
-        if (0 === $return) {
+        if (0 !== $return) {
             throw new \Exception("Error with RSA : l." . (__LINE__ - 2));
         }
         passthru(
             "[ -f tmp/keys/public.key ]  || openssl rsa -in tmp/keys/private.key -pubout -out tmp/keys/public.key",
             $return
         );
-        if (0 === $return) {
+        if (0 !== $return) {
             throw new \Exception("Error with RSA : l." . (__LINE__ - 4));
         }
 
