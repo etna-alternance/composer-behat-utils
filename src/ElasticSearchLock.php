@@ -20,7 +20,6 @@ trait ElasticSearchLock
         self::lockOrUnlockElasticSearch("unlock");
     }
 
-
     /**
      * Bloque ou débloque les écritures sur l'elasticsearch
      *
