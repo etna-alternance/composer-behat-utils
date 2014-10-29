@@ -25,9 +25,17 @@ trait Coverage
             return;
         }
 
-        if (true === is_string($expected_value) && substr($expected_value, 0, 1) === "#" && substr($expected_value, -1, 1) === "#") {
+        $is_string   = (true === is_string($expected_value));
+        $sharp_start = ($is_string && substr($expected_value, 0, 1) === "#");
+        $sharp_end   = ($is_string && substr($expected_value, -1, 1) === "#");
+        if ($is_string && $sharp_start && $sharp_end) {
             if (1 !== preg_match($expected_value, $found_value)) {
-                $errors[] = sprintf("%-35s: regex error : '%s' does not match '%s'", $prefix, $found_value, $expected_value);
+                $errors[] = sprintf(
+                    "%-35s: regex error : '%s' does not match '%s'",
+                    $prefix,
+                    $found_value,
+                    $expected_value
+                );
             }
 
             return;
@@ -44,7 +52,12 @@ trait Coverage
             $expected_count = count($expected_value);
             $found_count    = count($found_value);
             if ($expected_count !== $found_count) {
-                $errors[] = sprintf("%-35s: array length error : expected '%d'; got '%d'", $prefix, $expected_count, $found_count);
+                $errors[] = sprintf(
+                    "%-35s: array length error : expected '%d'; got '%d'",
+                    $prefix,
+                    $expected_count,
+                    $found_count
+                );
                 return;
             }
 
@@ -73,7 +86,12 @@ trait Coverage
         }
 
         if ($expected_value !== $found_value) {
-            $errors[] = sprintf("%-35s: value error : expected %s; got %s", $prefix, var_export($expected_value, true), var_export($found_value, true));
+            $errors[] = sprintf(
+                "%-35s: value error : expected %s; got %s",
+                $prefix,
+                var_export($expected_value, true),
+                var_export($found_value, true)
+            );
         }
     }
 }
