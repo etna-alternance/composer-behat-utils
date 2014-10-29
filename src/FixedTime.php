@@ -4,13 +4,13 @@ namespace ETNA\FeatureContext;
 
 use Behat\Behat\Event\SuiteEvent;
 
-function fake_time()
+function fakeTime()
 {
     global $custom_date;
     return real_strtotime($custom_date);
 }
 
-function fake_date($format, $timestamp = null)
+function fakeDate($format, $timestamp = null)
 {
     if ($timestamp === null) {
         $timestamp = time();
@@ -18,7 +18,7 @@ function fake_date($format, $timestamp = null)
     return real_date($format, $timestamp);
 }
 
-function fake_strtotime($time, $now = null)
+function fakeStrtotime($time, $now = null)
 {
     if ($now === null) {
         $now = time();
@@ -37,20 +37,20 @@ trait FixedTime
     {
         $parameters = $event->getContextParameters();
 
-        if (isset($parameters['customDate']) && $parameters['customDate']) {
-            global $custom_date;
-            $custom_date = $parameters['customDate'];
-
-            $rename = function ($name) {
-                runkit_function_rename($name, "real_{$name}");
-                runkit_function_rename("ETNA\\FeatureContext\\fake_{$name}", $name);
-            };
-            $rename("time");
-            $rename("date");
-            $rename("strtotime");
-        } else {
-            echo "You don't have customDate in your behat parameters\n";
+        if (false === isset($parameters['customDate'])) {
+            throw new \Exception("You don't have customDate in your behat parameters\n");
         }
+
+        global $custom_date;
+        self::$_date = $custom_date = $parameters['customDate'];
+
+        $rename = function ($real_name, $fake_name) {
+            runkit_function_rename($real_name, "real_{$real_name}");
+            runkit_function_rename("ETNA\\FeatureContext\\{$fake_name}", $real_name);
+        };
+        $rename("time", "fakeTime");
+        $rename("date", "fakeDate");
+        $rename("strtotime", "fakeStrtotime");
     }
 
     /**
@@ -70,6 +70,6 @@ trait FixedTime
     {
         global $custom_date;
 
-        $custom_date = self::$_parameters['customDate'];
+        $custom_date = self::$_date;
     }
 }

@@ -2,44 +2,46 @@
 
 namespace ETNA\FeatureContext;
 
-use Behat\Behat\Event\SuiteEvent;
-
 trait ElasticSearchLock
 {
     /**
      * @BeforeSuite
      */
-    static public function ElasticLock(SuiteEvent $event)
+    static public function lockElasticSearch()
     {
-        if (!isset(self::$silex_app) || !isset(self::$silex_app["elasticsearch.server"]) || !isset(self::$silex_app["elasticsearch.index"])) {
-            die("ElasticSearch Lock : l." . (__LINE__ - 2));
-        }
-        $server = self::$silex_app["elasticsearch.server"] . self::$silex_app["elasticsearch.index"];
-        exec(
-            "curl -XPUT '" . $server . "/_settings' -d '
-            {
-                \"index\" : {
-                    \"blocks.read_only\" : true
-                }
-            }
-            ' 2> /dev/null"
-        );
+        self::lockOrUnlockElasticSearch("lock");
     }
 
     /**
      * @AfterSuite
      */
-    public static function ElasticUnlock()
+    public static function unlockElasticSearch()
     {
-        if (!isset(self::$silex_app) || !isset(self::$silex_app["elasticsearch.server"]) || !isset(self::$silex_app["elasticsearch.index"])) {
-            die("ElasticSearch Lock : l." . (__LINE__ - 2));
+        self::lockOrUnlockElasticSearch("unlock");
+    }
+
+    /**
+     * Bloque ou débloque les écritures sur l'elasticsearch
+     *
+     * @param string $action "lock" ou "unlock" pour faire l'action qui porte le même nom
+     */
+    private static function lockOrUnlockElasticSearch($action)
+    {
+        switch (true) {
+            case false === isset(self::$silex_app):
+            case false === isset(self::$silex_app["elasticsearch.server"]):
+            case false === isset(self::$silex_app["elasticsearch.index"]):
+                throw new \Exception(__METHOD__ . "::{$action}: Missing parameter");
         }
+
+        $action = ($action === "lock") ? "true" : "false";
+
         $server = self::$silex_app["elasticsearch.server"] . self::$silex_app["elasticsearch.index"];
         exec(
             "curl -XPUT '" . $server . "/_settings' -d '
             {
                 \"index\" : {
-                    \"blocks.read_only\" : false
+                    \"blocks.read_only\" : {$action}
                 }
             }
             ' 2> /dev/null"
