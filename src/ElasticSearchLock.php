@@ -2,8 +2,6 @@
 
 namespace ETNA\FeatureContext;
 
-use Behat\Behat\Event\SuiteEvent;
-
 trait ElasticSearchLock
 {
     /**
@@ -26,7 +24,7 @@ trait ElasticSearchLock
     /**
      * Bloque ou débloque les écritures sur l'elasticsearch
      *
-     * @param string $action: "lock" ou "unlock" pour faire l'action qui porte le même nom
+     * @param string $action "lock" ou "unlock" pour faire l'action qui porte le même nom
      */
     private static function lockOrUnlockElasticSearch($action)
     {
