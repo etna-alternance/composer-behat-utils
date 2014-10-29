@@ -28,7 +28,7 @@ trait Coverage
         $is_string   = (true === is_string($expected_value));
         $sharp_start = ($is_string && substr($expected_value, 0, 1) === "#");
         $sharp_end   = ($is_string && substr($expected_value, -1, 1) === "#");
-        if ($is_string && $sharp_start && $sharp_end) {
+        if ($is_string === true && $sharp_start === true && $sharp_end === true) {
             if (1 !== preg_match($expected_value, $found_value)) {
                 $errors[] = sprintf(
                     "%-35s: regex error : '%s' does not match '%s'",
