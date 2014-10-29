@@ -4,6 +4,11 @@ namespace ETNA\FeatureContext;
 
 trait setUpScenarioDirectories
 {
+    /** @Var string */
+    private $requests_path;
+    /** @Var string */
+    private $results_path;
+
     /**
      * @BeforeScenario
      */
