@@ -10,7 +10,7 @@ trait ORMProfiler
     /**
      * @BeforeScenario
      */
-    public function resetProfiler($event)
+    public function resetProfiler()
     {
         self::$query_count += self::$silex_app["orm.profiler"]->currentQuery;
 
