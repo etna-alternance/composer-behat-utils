@@ -12,10 +12,10 @@
     ],
     "require": {
         "php": ">=5.5",
-        "behat/behat": "2.x@stable",
+        "behat/behat": "~2.4",
         "gquemener/behat-analysis-extension": "~1.0",
-        "phpunit/php-code-coverage": "2.0.*@dev",
-        "phpunit/phpcov": "2.0.*@dev"
+        "phpunit/php-code-coverage": "~2.0",
+        "phpunit/phpcov": "~2.0"
     },
     "autoload": {
         "psr-4": {
