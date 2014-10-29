@@ -18,52 +18,63 @@ trait Coverage
      */
     static public function codeCoverageStart(SuiteEvent $event)
     {
-        self::$_parameters = $event->getContextParameters();
+        $parameters = $event->getContextParameters();
 
-        if (isset(self::$_parameters['enableCodeCoverage']) && self::$_parameters['enableCodeCoverage']) {
-            if (!isset(self::$_parameters['coveragePath'])) {
-                echo "No coveragePath provided\n";
-                die("Error with Coverage : l." . (__LINE__ - 2));
-            }
-            if (!file_exists(getcwd() . '/' . self::$_parameters['coveragePath'])) {
-                mkdir(getcwd() . '/' . self::$_parameters['coveragePath'], 0777, true);
-            }
+        switch (true) {
+            case false === isset($parameters['enableCodeCoverage']):
+            case true !== $parameters['enableCodeCoverage']:
+                return;
 
-            $filter = new PHP_CodeCoverage_Filter();
-            if (isset(self::$_parameters['blacklist']) && is_array(self::$_parameters['blacklist'])) {
-                foreach (self::$_parameters['blacklist'] as $blackElem) {
-                    $filter->addDirectoryToBlacklist(getcwd() . "/{$blackElem}");
-                }
-            }
-
-            if (isset(self::$_parameters['whitelist']) && is_array(self::$_parameters['whitelist'])) {
-                foreach (self::$_parameters['whitelist'] as $whiteElem) {
-                    $filter->addDirectoryToWhitelist(getcwd() . "/{$whiteElem}");
-                }
-            }
-            self::$_coverage = new PHP_CodeCoverage(null, $filter);
-            self::$_coverage->start('Behat Test');
+            case false === isset($parameters['coveragePath']):
+                throw new \Exception("Missing parameter");
         }
+
+        $coverage_path = getcwd() . '/' . $parameters['coveragePath'];
+        if (false === file_exists($coverage_path)) {
+            mkdir($coverage_path, 0777, true);
+        }
+
+        $filter = new PHP_CodeCoverage_Filter();
+        if (true === isset($parameters['blacklist']) && true === is_array($parameters['blacklist'])) {
+            foreach ($parameters['blacklist'] as $blackElem) {
+                $filter->addDirectoryToBlacklist(getcwd() . "/{$blackElem}");
+            }
+        }
+
+        if (true === isset($parameters['whitelist']) && true === is_array($parameters['whitelist'])) {
+            foreach ($parameters['whitelist'] as $whiteElem) {
+                $filter->addDirectoryToWhitelist(getcwd() . "/{$whiteElem}");
+            }
+        }
+
+        self::$_coverage = new PHP_CodeCoverage(null, $filter);
+        self::$_coverage->start('Behat Test');
     }
 
     /**
      * @AfterSuite
      */
-    static public function codeCoverageStop()
+    static public function codeCoverageStop(SuiteEvent $event)
     {
-        if (isset(self::$_parameters['enableCodeCoverage']) && self::$_parameters['enableCodeCoverage']) {
-            self::$_coverage->stop();
+        $parameters = $event->getContextParameters();
 
-            $writer = new PHP_CodeCoverage_Report_PHP;
-            $writer->process(self::$_coverage, getcwd() . '/' . self::$_parameters['coveragePath'] . microtime(true) . ".php");
-
-            $writer = new PHP_CodeCoverage_Report_HTML;
-            $writer->process(self::$_coverage, getcwd() . '/' . self::$_parameters['coveragePath']);
-
-            $writer = new PHP_CodeCoverage_Report_Clover();
-            $writer->process(self::$_coverage, getcwd() . '/' . self::$_parameters['coveragePath'] . '.clover.xml');
-
-            exec("open " . getcwd() . '/' . self::$_parameters['coveragePath'] . "/index.html");
+        switch (true) {
+            case false === isset($parameters['enableCodeCoverage']):
+            case true !== $parameters['enableCodeCoverage']:
+                return;
         }
+
+        self::$_coverage->stop();
+
+        $writer = new PHP_CodeCoverage_Report_PHP;
+        $writer->process(self::$_coverage, getcwd() . '/' . $parameters['coveragePath'] . microtime(true) . ".php");
+
+        $writer = new PHP_CodeCoverage_Report_HTML;
+        $writer->process(self::$_coverage, getcwd() . '/' . $parameters['coveragePath']);
+
+        $writer = new PHP_CodeCoverage_Report_Clover();
+        $writer->process(self::$_coverage, getcwd() . '/' . $parameters['coveragePath'] . '.clover.xml');
+
+        exec("open " . getcwd() . '/' . self::$_parameters['coveragePath'] . "/index.html");
     }
 }
