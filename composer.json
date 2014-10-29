@@ -15,7 +15,8 @@
         "behat/behat": "~2.4",
         "gquemener/behat-analysis-extension": "~1.0",
         "phpunit/php-code-coverage": "~2.0",
-        "phpunit/phpcov": "~2.0"
+        "phpunit/phpcov": "~2.0",
+        "guzzlehttp/guzzle": "~5.0"
     },
     "autoload": {
         "psr-4": {
