@@ -3,11 +3,11 @@
 namespace ETNA\FeatureContext;
 
 use Behat\Behat\Event\SuiteEvent;
-use PHP_CodeCoverage_Filter;
 use PHP_CodeCoverage;
-use PHP_CodeCoverage_Report_PHP;
-use PHP_CodeCoverage_Report_HTML;
+use PHP_CodeCoverage_Filter;
 use PHP_CodeCoverage_Report_Clover;
+use PHP_CodeCoverage_Report_HTML;
+use PHP_CodeCoverage_Report_PHP;
 
 trait Coverage
 {
