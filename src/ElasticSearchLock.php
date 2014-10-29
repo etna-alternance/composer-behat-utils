@@ -31,7 +31,7 @@ trait ElasticSearchLock
     private static function lockOrUnlockElasticSearch($action)
     {
         switch (true) {
-            case false === isset(self::$silex_app:
+            case false === isset(self::$silex_app):
             case false === isset(self::$silex_app["elasticsearch.server"]):
             case false === isset(self::$silex_app["elasticsearch.index"]):
                 throw new \Exception(__METHOD__ . "::{$action}: Missing parameter");
