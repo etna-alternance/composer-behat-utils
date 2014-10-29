@@ -4,7 +4,8 @@ namespace ETNA\FeatureContext;
 
 use GuzzleHttp\Client;
 
-trait RabbitMQ {
+trait RabbitMQ
+{
     static private function getRabbitMqClient()
     {
         return new Client([
