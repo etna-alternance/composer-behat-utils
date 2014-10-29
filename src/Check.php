@@ -2,7 +2,7 @@
 
 namespace ETNA\FeatureContext;
 
-trait Coverage
+trait Check
 {
     /**
      * Valide l'égalité de 2 valeurs ($expected_value & $found_value)
