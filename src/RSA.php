@@ -32,7 +32,7 @@ trait RSA
             throw new \Exception("Error with RSA : l." . (__LINE__ - 4));
         }
 
-        self::$rsa = \ETNA\RSA\RSA::loadPrivateKey(realpath(getcwd() . "/tmp/keys/private.key"));
+        self::$rsa = \ETNA\RSA\RSA::loadPrivateKey("file://" . realpath(getcwd() . "/tmp/keys/private.key"));
     }
 
     /**
