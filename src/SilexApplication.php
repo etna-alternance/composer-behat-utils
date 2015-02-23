@@ -11,7 +11,13 @@ trait SilexApplication
      */
     static public function setupSilexApplication()
     {
-        self::$silex_app = include_once getcwd() . "/app/bootstrap.php";
+        if (file_exists(getcwd() . "/app/bootstrap.php")) {
+            $api_path = getcwd() . "/app/bootstrap.php";
+        } else {
+            $api_path = getcwd() . "/public/index.php";
+        }
+
+        self::$silex_app = include_once $api_path;
         global $app;
         $app = self::$silex_app;
     }
