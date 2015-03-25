@@ -67,13 +67,13 @@ trait Coverage
         self::$_coverage->stop();
 
         $writer = new PHP_CodeCoverage_Report_PHP;
-        $writer->process(self::$_coverage, getcwd() . '/' . $parameters['coveragePath'] . microtime(true) . ".php");
+        $writer->process(self::$_coverage, getcwd() . "/{$parameters['coveragePath']}.php");
 
         $writer = new PHP_CodeCoverage_Report_HTML;
-        $writer->process(self::$_coverage, getcwd() . '/' . $parameters['coveragePath']);
+        $writer->process(self::$_coverage, getcwd() . "/{$parameters['coveragePath']}");
 
         $writer = new PHP_CodeCoverage_Report_Clover();
-        $writer->process(self::$_coverage, getcwd() . '/' . $parameters['coveragePath'] . '.clover.xml');
+        $writer->process(self::$_coverage, getcwd() . "/{$parameters['coveragePath']}.clover.xml");
 
         exec("open " . getcwd() . '/' . self::$_parameters['coveragePath'] . "/index.html");
     }
