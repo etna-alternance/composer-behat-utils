@@ -28,8 +28,10 @@ trait TimeProfiler
     {
         $now  = round(microtime(true) * 1000);
         $diff = $now - self::$last_time;
-        if ( $diff > self::$max_time) {
-            echo "{$event->getScenario()->getFile()}:{$event->getScenario()->getLine()}\n";
+        if (false === isset(self::$_parameters['enableCodeCoverage']) && $diff > self::$max_time) {
+            if (get_class($event) !== 'Behat\Behat\Event\OutlineExampleEvent') {
+                echo "{$event->getScenario()->getFile()}:{$event->getScenario()->getLine()}\n";
+            }
             throw new PendingException("Request too long {$diff}ms > " . self::$max_time . "ms \n");
         }
     }
