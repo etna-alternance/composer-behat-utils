@@ -16,7 +16,7 @@
         "gquemener/behat-analysis-extension": "~1.0",
         "phpunit/php-code-coverage": "~2.0",
         "phpunit/phpcov": "~2.0",
-        "guzzlehttp/guzzle": "~5.0",
+        "guzzlehttp/guzzle": "~6.1",
         "etna/php-rsa": "~0.2.0"
     },
     "autoload": {
