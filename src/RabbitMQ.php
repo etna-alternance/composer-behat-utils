@@ -9,11 +9,9 @@ trait RabbitMQ
     static private function getRabbitMqClient()
     {
         return new Client([
-            "base_url" => "http://127.0.0.1:15672",
-            "defaults" => [
-                "headers" => ["Content-Type" => "application/json"],
-                "auth"    => ["guest", "guest"],
-            ],
+            "base_uri" => "http://127.0.0.1:15672",
+            "headers" => ["Content-Type" => "application/json"],
+            "auth"    => ["guest", "guest"]
         ]);
     }
 
