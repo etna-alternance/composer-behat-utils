@@ -4,31 +4,10 @@ namespace ETNA\FeatureContext;
 
 use Behat\Behat\Event\SuiteEvent;
 
-function fakeTime()
-{
-    global $custom_date;
-    return real_strtotime($custom_date);
-}
-
-function fakeDate($format, $timestamp = null)
-{
-    if ($timestamp === null) {
-        $timestamp = time();
-    }
-    return real_date($format, $timestamp);
-}
-
-function fakeStrtotime($time, $now = null)
-{
-    if ($now === null) {
-        $now = time();
-    }
-    return real_strtotime($time, $now);
-}
-
 trait FixedTime
 {
-    static private $_date;
+    static private $_default_date;
+    static private $_current_date;
 
     /**
      * @BeforeSuite
@@ -41,16 +20,37 @@ trait FixedTime
             throw new \Exception("You don't have customDate in your behat parameters\n");
         }
 
-        global $custom_date;
-        self::$_date = $custom_date = $parameters['customDate'];
+        self::$_default_date = self::$_current_date = $parameters['customDate'];
+    }
 
-        $rename = function ($real_name, $fake_name) {
-            runkit_function_rename($real_name, "real_{$real_name}");
-            runkit_function_rename("ETNA\\FeatureContext\\{$fake_name}", $real_name);
-        };
-        $rename("time", "fakeTime");
-        $rename("date", "fakeDate");
-        $rename("strtotime", "fakeStrtotime");
+    /**
+     * @BeforeScenario
+     */
+    public function changeTime()
+    {
+        $_current_date = self::$_current_date;
+
+        uopz_set_return("time", function () use ($_current_date) {
+            return strtotime($_current_date);
+        }, true);
+
+        uopz_set_return("date", function ($format, $timestamp = null) {
+            return date($format, $timestamp ?: time());
+        }, true);
+
+        uopz_set_return("strtotime", function ($time, $now = null) {
+            return strtotime($time, $now ?: time());
+        }, true);
+    }
+
+    /**
+     * @AfterScenario
+     */
+    public function resetTime()
+    {
+        uopz_unset_return("strtotime");
+        uopz_unset_return("date");
+        uopz_unset_return("time");
     }
 
     /**
@@ -58,9 +58,10 @@ trait FixedTime
      */
     public function queLaDateEst($new_date)
     {
-        global $custom_date;
+        self::$_current_date = $new_date;
 
-        $custom_date = $new_date;
+        $this->resetTime();
+        $this->changeTime();
     }
 
     /**
@@ -68,8 +69,9 @@ trait FixedTime
      */
     public function jeRollbackLaDate()
     {
-        global $custom_date;
+        self::$_current_date = self::$_default_date;
 
-        $custom_date = self::$_date;
+        $this->resetTime();
+        $this->changeTime();
     }
 }
