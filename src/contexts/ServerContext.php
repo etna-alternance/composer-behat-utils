@@ -1,7 +1,6 @@
 <?php
 
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
-use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 
 class ServerContext extends BaseContext
 {
@@ -71,7 +70,7 @@ class ServerContext extends BaseContext
      *
      * @AfterSuite
      */
-    public static function tearDown(AfterSuiteScope $scope)
+    public static function tearDown()
     {
         if (self::$pid) {
             self::killProcess(self::$pid);
@@ -99,7 +98,7 @@ class ServerContext extends BaseContext
     {
         // Disable error handler for now
         set_error_handler(
-            function() {
+            function () {
                 return true;
             }
         );
@@ -130,10 +129,12 @@ class ServerContext extends BaseContext
     private static function startBuiltInHttpd($host, $port, $documentRoot)
     {
         // Build the command
-        $command = sprintf('php -S %s:%d -t %s >/dev/null 2>&1 & echo $!',
-                            $host,
-                            $port,
-                            $documentRoot);
+        $command = sprintf(
+            'php -S %s:%d -t %s >/dev/null 2>&1 & echo $!',
+            $host,
+            $port,
+            $documentRoot
+        );
 
         $output = array();
         exec($command, $output);

@@ -2,7 +2,6 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class ApiContext extends BaseContext
@@ -13,8 +12,6 @@ class ApiContext extends BaseContext
     /**
      * Initializes context.
      * Every scenario gets it's own context object.
-     *
-     * @param array $parameters context parameters (set them up through behat.yml)
      */
     public function __construct()
     {
@@ -180,6 +177,8 @@ class ApiContext extends BaseContext
      * @Then /^le résultat devrait être identique à "(.*)"$/
      * @Then /^le résultat devrait être identique au JSON suivant :$/
      * @Then /^le résultat devrait ressembler au JSON suivant :$/
+     *
+     * @param string $string
      */
     public function leResultatDevraitRessemblerAuJsonSuivant($string)
     {

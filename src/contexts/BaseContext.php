@@ -7,8 +7,8 @@ abstract class BaseContext implements Context
 {
     static protected $silex_app;
     static protected $contexts;
-    protected        $requests_path;
-    protected        $results_path;
+    protected $requests_path;
+    protected $results_path;
 
     /** @BeforeScenario */
     public function setUp(BeforeScenarioScope $scope)
@@ -23,6 +23,9 @@ abstract class BaseContext implements Context
         self::$silex_app = $contexts['MainContext']->getSilexApp();
     }
 
+    /**
+     * @param string $context
+     */
     protected function getContext($context)
     {
         if (false === isset(self::$contexts[$context])) {
@@ -32,6 +35,9 @@ abstract class BaseContext implements Context
         return self::$contexts[$context];
     }
 
+    /**
+     * @param string $name
+     */
     protected function getParameter($name)
     {
         return self::$contexts['MainContext']->getParameter($name);

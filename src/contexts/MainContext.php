@@ -1,7 +1,6 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use Silex\Application;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 
 putenv("APPLICATION_ENV=" . (getenv("APPLICATION_ENV") ?: "testing"));
