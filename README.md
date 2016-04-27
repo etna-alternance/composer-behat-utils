@@ -10,8 +10,7 @@ Dependencies
 In your composer.json :
 ```
 "require-dev": {
-    "behat/behat": "2.x@stable",
-    "gquemener/behat-analysis-extension": "~1.0",
+    "behat/behat": "3.x@stable",
     "phpunit/php-code-coverage": "2.0.*@dev",
     "phpunit/phpcov": "2.0.*@dev",
 },
@@ -19,55 +18,69 @@ In your composer.json :
 
 Install
 -----------------------
- * Add to your FeatureContext.php file :
-```
-     use ETNA\FeatureContext\Coverage;
-```
  * use this behat.yml if you dont have one :
 ```
 # behat.yml
 default:
-    formatter:
-        name:                       progress
-        parameters:
-            decorated:              true
-            verbose:                false
-            time:                   true
-            language:               fr
-            output_path:            null
-            multiline_arguments:    true
-    paths:
-        features: features
-        bootstrap: %behat.paths.features%/bootstrap
-    extensions:
-            Behat\AnalysisExtension\Extension: ~
-wip:
-    filters:
-        tags:       "@wip"
-    formatter:
-        name:       progress
+    autoload:
+        '': %paths.base%/path/to/contexts
+    suites:
+        default:
+            paths:
+                - %paths.base%/Tests/Functional/features
+            contexts:
+                - MainContext
+                - ApiContext
+                - DoctrineContext:
+                    max_queries: 10
+                - ElasticContext
+                - FixedDateContext:
+                    date: "2016-04-12 14:42:42"
+                - AuthContext
+                - TimeProfilerContext:
+                    max_time: 200
+    formatters:
+        progress:
+            decorated:           true
+            verbose:             false
+            time:                true
+            language:            fr
+            output_path:         null
+            multiline_arguments: true
 ci:
-    formatter:
-        name:       progress,junit,html
-        parameters:
-            output_path: null,tmp/behat/behatJunit,tmp/behat/behat_report.html
-
-    context:
-        parameters:
-            # Whether or not to collect code coverage
-            enableCodeCoverage: true
-
-            # Path to store the generated code coverage report
-            coveragePath: /tmp/behat/coverage
-
-            # White list of directories to collect coverage about
-            whitelist:
-                - app
-            # Black list of directories to not collect coverage about
-            blacklist:
-                - tmp
-                - features
-                - bin
+    suites:
+        default:
+            contexts:
+                - MainContext
+                - ApiContext
+                - DoctrineContext:
+                    max_queries: 10
+                - ElasticContext
+                - FixedDateContext:
+                    date: "2016-04-12 14:42:42"
+                - AuthContext
+                - CoverageContext:
+                    coverage_path: /tmp/behat/coverage
+                    whitelist:
+                        - app
+                    blacklist:
+                        - vendor
+                        - bin
+                        - tmp
+                        - features
+                        - Tests
+    formatters:
+        progress:
+            output_path:         null
+        junit:
+            output_path: tmp/behat/behatJunit
+        html:
+            output_path: tmp/behat/behat_report.html
+wip:
+    suites:
+        default:
+            filters:
+                tags: @wip
 ```
 
 Run
