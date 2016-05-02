@@ -101,6 +101,16 @@ class ApiContext extends BaseContext
     }
 
     /**
+     * @Then /^le message HTTP devrait être "([^"]*)"$/
+     */
+    public function leMessageHTTPDevraitEtre($mess)
+    {
+        if (trim($this->response['http_message']) != "$mess") {
+            throw new Exception("Bad message response message {$this->response['http_message']} != {$mess}");
+        }
+    }
+
+    /**
      * @Then /^je devrais avoir un résultat d\'API en JSON$/
      */
     public function jeDevraisAvoirUnResultatDApiEnJSON()
@@ -119,6 +129,15 @@ class ApiContext extends BaseContext
         $this->data = $json;
     }
 
+    /**
+     * @Given /^je devrais avoir un résultat d\'API en PDF$/
+     */
+    public function jeDevraisAvoirUnResultatDApiEnPdf()
+    {
+        if ("application/pdf" !== $this->response["headers"]["content-type"]) {
+            throw new Exception("Invalid response type");
+        }
+    }
 
     /**
      * @Given /^je devrais avoir un résultat d\'API en CSV$/
@@ -198,5 +217,15 @@ class ApiContext extends BaseContext
     {
         $file = realpath($this->results_path . "/" . $file);
         $this->leResultatDevraitRessemblerAuJsonSuivant(file_get_contents($file));
+    }
+
+    /**
+     * @Then /^je devrais avoir un objet comme résultat$/
+     */
+    public function jeDevraisAvoirUnObjetCommeResultat()
+    {
+        if (!is_object($this->data)) {
+            throw new Exception("{$this->data} is not an object");
+        }
     }
 }
