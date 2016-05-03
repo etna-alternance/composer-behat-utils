@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
@@ -27,7 +29,7 @@ class TimeProfilerContext implements Context
      */
     public function stopTimeProfiler(AfterScenarioScope $scope)
     {
-        $has_coverage = $scope->getEnvironment()->hasContextClass("CoverageContext");
+        $has_coverage = $scope->getEnvironment()->hasContextClass("ETNA\FeatureContext\CoverageContext");
         if (true === $has_coverage) {
             return;
         }

@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 
 class ElasticContext extends BaseContext

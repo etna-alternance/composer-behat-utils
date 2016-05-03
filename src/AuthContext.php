@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use ETNA\FeatureContext as EtnaFeatureContext;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\AfterStepScope;
@@ -14,7 +16,7 @@ class AuthContext extends BaseContext
     {
         $environment = $scope->getEnvironment();
 
-        $this->request = $environment->getContext('ApiContext')->getRequest();
+        $this->request = $environment->getContext('ETNA\FeatureContext\ApiContext')->getRequest();
     }
 
     /**
@@ -50,7 +52,7 @@ class AuthContext extends BaseContext
     {
         $environment = $scope->getEnvironment();
 
-        $environment->getContext('ApiContext')->setRequest($this->request);
+        $environment->getContext('ETNA\FeatureContext\ApiContext')->setRequest($this->request);
     }
 
     /**

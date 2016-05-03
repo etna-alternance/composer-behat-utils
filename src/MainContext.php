@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Behat\Behat\Context\Context;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 
@@ -9,8 +11,6 @@ class MainContext implements Context
 {
     static private $silex_app;
     static private $parameters = [];
-
-    // use ETNA\FeatureContext\FixedTime;
 
     /** @BeforeSuite */
     public static function setUpSilexApp()

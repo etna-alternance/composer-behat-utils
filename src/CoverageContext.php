@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 
 class CoverageContext extends BaseContext
@@ -21,7 +23,7 @@ class CoverageContext extends BaseContext
     {
         $environment            = $scope->getEnvironment();
         $contexts_params        = $environment->getContextClassesWithArguments();
-        self::$_coverage_params = $contexts_params['CoverageContext'];
+        self::$_coverage_params = $contexts_params['ETNA\FeatureContext\CoverageContext'];
     }
 
     /**

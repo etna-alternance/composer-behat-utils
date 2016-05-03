@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 
 class ServerContext extends BaseContext
@@ -23,7 +25,7 @@ class ServerContext extends BaseContext
     public static function setUp(BeforeSuiteScope $scope)
     {
         // Fetch config
-        $params = $scope->getEnvironment()->getContextClassesWithArguments()['ServerContext'];
+        $params = $scope->getEnvironment()->getContextClassesWithArguments()['ETNA\FeatureContext\ServerContext'];
         $url    = parse_url($params['url']);
         $port   = !empty($url['port']) ? $url['port'] : 80;
 

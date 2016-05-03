@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -83,7 +85,7 @@ class ApiContext extends BaseContext
             ),
         ];
 
-        $this->getContext('DoctrineContext')->checkMaxQueries($method, $result);
+        $this->getContext('ETNA\FeatureContext\DoctrineContext')->checkMaxQueries($method, $result);
 
         $this->response = $result;
     }
@@ -97,6 +99,16 @@ class ApiContext extends BaseContext
         if ("$retCode" !== "$code") {
             echo $this->response["body"];
             throw new Exception("Bad http response code {$retCode} != {$code}");
+        }
+    }
+
+    /**
+     * @Then /^le message HTTP devrait être "([^"]*)"$/
+     */
+    public function leMessageHTTPDevraitEtre($mess)
+    {
+        if (trim($this->response['http_message']) != "$mess") {
+            throw new Exception("Bad message response message {$this->response['http_message']} != {$mess}");
         }
     }
 
@@ -119,6 +131,15 @@ class ApiContext extends BaseContext
         $this->data = $json;
     }
 
+    /**
+     * @Given /^je devrais avoir un résultat d\'API en PDF$/
+     */
+    public function jeDevraisAvoirUnResultatDApiEnPdf()
+    {
+        if ("application/pdf" !== $this->response["headers"]["content-type"]) {
+            throw new Exception("Invalid response type");
+        }
+    }
 
     /**
      * @Given /^je devrais avoir un résultat d\'API en CSV$/
@@ -198,5 +219,15 @@ class ApiContext extends BaseContext
     {
         $file = realpath($this->results_path . "/" . $file);
         $this->leResultatDevraitRessemblerAuJsonSuivant(file_get_contents($file));
+    }
+
+    /**
+     * @Then /^je devrais avoir un objet comme résultat$/
+     */
+    public function jeDevraisAvoirUnObjetCommeResultat()
+    {
+        if (!is_object($this->data)) {
+            throw new Exception("{$this->data} is not an object");
+        }
     }
 }
