@@ -43,7 +43,7 @@ class ApiContext extends BaseContext
         if ($body !== null) {
             $body = file_get_contents($this->requests_path . $body);
             if (!$body) {
-                throw new Exception("File not found : {$this->requests_path}${body}");
+                throw new \Exception("File not found : {$this->requests_path}${body}");
             }
         }
         $this->jeFaisUneRequetteHTTPAvecDuJSON($method, $url, $body);
@@ -98,7 +98,7 @@ class ApiContext extends BaseContext
         $retCode = $this->response["http_code"];
         if ("$retCode" !== "$code") {
             echo $this->response["body"];
-            throw new Exception("Bad http response code {$retCode} != {$code}");
+            throw new \Exception("Bad http response code {$retCode} != {$code}");
         }
     }
 
@@ -108,7 +108,7 @@ class ApiContext extends BaseContext
     public function leMessageHTTPDevraitEtre($mess)
     {
         if (trim($this->response['http_message']) != "$mess") {
-            throw new Exception("Bad message response message {$this->response['http_message']} != {$mess}");
+            throw new \Exception("Bad message response message {$this->response['http_message']} != {$mess}");
         }
     }
 
@@ -118,15 +118,15 @@ class ApiContext extends BaseContext
     public function jeDevraisAvoirUnResultatDApiEnJSON()
     {
         if ("application/json" !== $this->response["headers"]["content-type"]) {
-            throw new Exception("Invalid response type");
+            throw new \Exception("Invalid response type");
         }
         if ("" == $this->response['body']) {
-            throw new Exception("No response");
+            throw new \Exception("No response");
         }
         $json = json_decode($this->response['body']);
 
         if (null === $json && json_last_error()) {
-            throw new Exception("Invalid response");
+            throw new \Exception("Invalid response");
         }
         $this->data = $json;
     }
@@ -137,7 +137,7 @@ class ApiContext extends BaseContext
     public function jeDevraisAvoirUnResultatDApiEnPdf()
     {
         if ("application/pdf" !== $this->response["headers"]["content-type"]) {
-            throw new Exception("Invalid response type");
+            throw new \Exception("Invalid response type");
         }
     }
 
@@ -147,7 +147,7 @@ class ApiContext extends BaseContext
     public function jeDevraisAvoirUnResultatDApiEnCsv()
     {
         if ("text/csv; charset=UTF-8" !== $this->response["headers"]["content-type"]) {
-            throw new Exception("Invalid response type");
+            throw new \Exception("Invalid response type");
         }
     }
 
@@ -162,7 +162,7 @@ class ApiContext extends BaseContext
                 $this->handleErrors($matches[1], $errors);
             }
         } else {
-            throw new Exception("Invalid filename");
+            throw new \Exception("Invalid filename");
         }
     }
 
@@ -172,7 +172,7 @@ class ApiContext extends BaseContext
     public function leHeaderDoitEtre($header, $value)
     {
         if ($this->response["headers"][strtolower($header)] != $value) {
-            throw new Exception("Invalid header '{$header}'. Value should be '{$value}' but received '{$this->response["headers"][$header]}'");
+            throw new \Exception("Invalid header '{$header}'. Value should be '{$value}' but received '{$this->response["headers"][$header]}'");
         }
     }
 
@@ -185,11 +185,11 @@ class ApiContext extends BaseContext
             return;
         }
         if (!is_array($this->data)) {
-            throw new Exception("Response is not an array");
+            throw new \Exception("Response is not an array");
         }
         if (null !== $length) {
             if (count($this->data) != $length) {
-                throw new Exception("Invalid response length " . count($this->data) . " != {$length}");
+                throw new \Exception("Invalid response length " . count($this->data) . " != {$length}");
             }
         }
     }
@@ -205,7 +205,7 @@ class ApiContext extends BaseContext
     {
         $result = json_decode($string);
         if (null === $result) {
-            throw new Exception("json_decode error");
+            throw new \Exception("json_decode error");
         }
 
         $this->check($result, $this->data, "result", $errors);
@@ -227,7 +227,7 @@ class ApiContext extends BaseContext
     public function jeDevraisAvoirUnObjetCommeResultat()
     {
         if (!is_object($this->data)) {
-            throw new Exception("{$this->data} is not an object");
+            throw new \Exception("{$this->data} is not an object");
         }
     }
 }

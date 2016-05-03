@@ -70,7 +70,7 @@ class RabbitContext extends BaseContext
 
         foreach ($nodes as $key_node => $node) {
             if (!in_array($node, array_keys($current_node))) {
-                throw new Exception("Node {$node} not found");
+                throw new \Exception("Node {$node} not found");
             }
             $current_node = $current_node[$node];
         }
@@ -92,7 +92,7 @@ class RabbitContext extends BaseContext
 
         $this->check($node_value, $current_node_value, '', $errors);
         if ($nb_err = count($errors)) {
-            throw new Exception("{$nb_err} errors :\n" . implode("\n", $errors));
+            throw new \Exception("{$nb_err} errors :\n" . implode("\n", $errors));
         }
     }
 
@@ -105,7 +105,7 @@ class RabbitContext extends BaseContext
 
         $current_node = $this->getNode($node, $response);
         if ($length != count($current_node)) {
-            throw new Exception("Invalid node length " . count($current_node) . " != {$length}");
+            throw new \Exception("Invalid node length " . count($current_node) . " != {$length}");
         }
     }
 
@@ -119,7 +119,7 @@ class RabbitContext extends BaseContext
                 $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
                 $body = json_decode($msg->body);
                 if (empty($body)) {
-                    throw new Exception("{$msg->body}");
+                    throw new \Exception("{$msg->body}");
                 }
             },
             false,
@@ -137,7 +137,7 @@ class RabbitContext extends BaseContext
     {
         if (null !== $body) {
             if (!file_exists($this->results_path . $body)) {
-                throw new Exception("File not found : {$this->results_path}${body}");
+                throw new \Exception("File not found : {$this->results_path}${body}");
             }
         }
 
@@ -168,7 +168,7 @@ class RabbitContext extends BaseContext
         $this->response[$queue] = $parsed_response;
 
         if (!$parsed_response) {
-            throw new Exception("Error: Queue {$queue} is empty");
+            throw new \Exception("Error: Queue {$queue} is empty");
         }
     }
 

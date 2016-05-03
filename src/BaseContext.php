@@ -31,7 +31,7 @@ abstract class BaseContext implements Context
     protected function getContext($context)
     {
         if (false === isset(self::$contexts[$context])) {
-            throw new Exception("Context {$context} not found");
+            throw new \Exception("Context {$context} not found");
         }
 
         return self::$contexts[$context];
@@ -63,7 +63,7 @@ abstract class BaseContext implements Context
     {
         if ($nb_err = count($errors)) {
             echo json_encode($data, JSON_PRETTY_PRINT);
-            throw new Exception("{$nb_err} errors :\n" . implode("\n", $errors));
+            throw new \Exception("{$nb_err} errors :\n" . implode("\n", $errors));
         }
     }
 
