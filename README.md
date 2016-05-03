@@ -29,15 +29,15 @@ default:
             paths:
                 - %paths.base%/Tests/Functional/features
             contexts:
-                - MainContext
-                - ApiContext
-                - DoctrineContext:
+                - ETNA\FeatureContext\MainContext
+                - ETNA\FeatureContext\ApiContext
+                - ETNA\FeatureContext\DoctrineContext:
                     max_queries: 10
-                - ElasticContext
-                - FixedDateContext:
+                - ETNA\FeatureContext\ElasticContext
+                - ETNA\FeatureContext\FixedDateContext:
                     date: "2016-04-12 14:42:42"
-                - AuthContext
-                - TimeProfilerContext:
+                - ETNA\FeatureContext\AuthContext
+                - ETNA\FeatureContext\TimeProfilerContext:
                     max_time: 200
     formatters:
         progress:
@@ -51,15 +51,15 @@ ci:
     suites:
         default:
             contexts:
-                - MainContext
-                - ApiContext
-                - DoctrineContext:
+                - ETNA\FeatureContext\MainContext
+                - ETNA\FeatureContext\ApiContext
+                - ETNA\FeatureContext\DoctrineContext:
                     max_queries: 10
-                - ElasticContext
-                - FixedDateContext:
+                - ETNA\FeatureContext\ElasticContext
+                - ETNA\FeatureContext\FixedDateContext:
                     date: "2016-04-12 14:42:42"
-                - AuthContext
-                - CoverageContext:
+                - ETNA\FeatureContext\AuthContext
+                - ETNA\FeatureContext\CoverageContext:
                     coverage_path: /tmp/behat/coverage
                     whitelist:
                         - app

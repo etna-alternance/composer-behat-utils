@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 
@@ -20,7 +22,7 @@ abstract class BaseContext implements Context
         );
 
         self::$contexts  = $contexts;
-        self::$silex_app = $contexts['MainContext']->getSilexApp();
+        self::$silex_app = $contexts['ETNA\FeatureContext\MainContext']->getSilexApp();
     }
 
     /**
@@ -40,12 +42,12 @@ abstract class BaseContext implements Context
      */
     protected function getParameter($name)
     {
-        return self::$contexts['MainContext']->getParameter($name);
+        return self::$contexts['ETNA\FeatureContext\MainContext']->getParameter($name);
     }
 
     protected static function setParameter($name, $value)
     {
-        self::$contexts['MainContext']->setParameter($name, $value);
+        self::$contexts['ETNA\FeatureContext\MainContext']->setParameter($name, $value);
     }
 
     /**

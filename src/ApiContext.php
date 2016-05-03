@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -83,7 +85,7 @@ class ApiContext extends BaseContext
             ),
         ];
 
-        $this->getContext('DoctrineContext')->checkMaxQueries($method, $result);
+        $this->getContext('ETNA\FeatureContext\DoctrineContext')->checkMaxQueries($method, $result);
 
         $this->response = $result;
     }

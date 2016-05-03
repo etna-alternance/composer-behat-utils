@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Behat\Behat\Event\SuiteEvent;
 
 class FixedDateContext extends BaseContext

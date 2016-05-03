@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Symfony\Component\Filesystem\Filesystem;
 
 class SvnContext extends BaseContext

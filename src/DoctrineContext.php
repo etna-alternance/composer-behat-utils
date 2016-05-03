@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use Behat\Behat\Tester\Exception\PendingException;
 
 class DoctrineContext extends BaseContext

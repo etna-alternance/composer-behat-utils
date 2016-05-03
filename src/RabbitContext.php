@@ -1,5 +1,7 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 class RabbitContext extends BaseContext
 {
     private $vhosts = ["/test-behat"];
