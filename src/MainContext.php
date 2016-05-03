@@ -42,7 +42,7 @@ class MainContext implements Context
     public function getParameter($name)
     {
         if (false === isset(self::$parameters[$name])) {
-            throw new Exception("Parameter {$name} not set");
+            throw new \Exception("Parameter {$name} not set");
         }
 
         return self::$parameters[$name];
