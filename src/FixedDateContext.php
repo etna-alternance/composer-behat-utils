@@ -2,25 +2,37 @@
 
 namespace ETNA\FeatureContext;
 
-use Behat\Behat\Event\SuiteEvent;
+use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 
 class FixedDateContext extends BaseContext
 {
-    private $_date;
-    private $_custom_date;
+    private static $_date;
+    private static $_custom_date;
 
     public function __construct($date)
     {
-        $this->_date        = $date;
-        $this->_custom_date = $date;
+        // Constructeur pour avoir des paramètres,
+        // sauf qu'on récupère les paramètres en BeforeSuite
+        // donc on ne fait rien ici
     }
 
     /**
-     * @BeforeScenario
+     * @BeforeSuite
      */
-    public function setCustomDate()
+    public static function setCustomDateParams(BeforeSuiteScope $scope)
     {
-        $_custom_date = $this->_custom_date;
+        $environment        = $scope->getEnvironment();
+        $contexts_params    = $environment->getContextClassesWithArguments();
+        self::$_date        = $contexts_params['ETNA\FeatureContext\FixedDateContext']["date"];
+        self::$_custom_date = self::$_date;
+    }
+
+    /**
+     * @BeforeSuite
+     */
+    public static function setCustomDate()
+    {
+        $_custom_date = self::$_custom_date;
         uopz_set_return("time", function () use ($_custom_date) {
             return strtotime($_custom_date);
         }, true);
@@ -37,9 +49,9 @@ class FixedDateContext extends BaseContext
     }
 
     /**
-     * @AfterScenario
+     * @AfterSuite
      */
-    public function resetToNormalDate()
+    public static function resetToNormalDate()
     {
         uopz_unset_return("strtotime");
         uopz_unset_return("date");
@@ -51,10 +63,10 @@ class FixedDateContext extends BaseContext
      */
     public function queLaDateEst($new_date)
     {
-        $this->_custom_date = $new_date;
+        self::$_custom_date = $new_date;
 
-        $this->resetToNormalDate();
-        $this->setCustomDate();
+        self::resetToNormalDate();
+        self::setCustomDate();
     }
 
     /**
@@ -62,9 +74,9 @@ class FixedDateContext extends BaseContext
      */
     public function jeRollbackLaDate()
     {
-        $this->_custom_date = $this->_date;
+        self::$_custom_date = self::$_date;
 
-        $this->resetToNormalDate();
-        $this->setCustomDate();
+        self::resetToNormalDate();
+        self::setCustomDate();
     }
 }
