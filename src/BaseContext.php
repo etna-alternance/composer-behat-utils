@@ -2,8 +2,71 @@
 
 namespace ETNA\FeatureContext;
 
-trait Check
+use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+
+abstract class BaseContext implements Context
 {
+    static protected $silex_app;
+    static protected $contexts;
+    protected $requests_path;
+    protected $results_path;
+
+    /** @BeforeScenario */
+    public function setUp(BeforeScenarioScope $scope)
+    {
+        $environment = $scope->getEnvironment();
+        $contexts    = array_combine(
+            $environment->getContextClasses(),
+            $environment->getContexts()
+        );
+
+        self::$contexts  = $contexts;
+        self::$silex_app = $contexts['ETNA\FeatureContext\MainContext']->getSilexApp();
+    }
+
+    /**
+     * @param string $context
+     */
+    protected function getContext($context)
+    {
+        if (false === isset(self::$contexts[$context])) {
+            throw new \Exception("Context {$context} not found");
+        }
+
+        return self::$contexts[$context];
+    }
+
+    /**
+     * @param string $name
+     */
+    protected function getParameter($name)
+    {
+        return self::$contexts['ETNA\FeatureContext\MainContext']->getParameter($name);
+    }
+
+    protected static function setParameter($name, $value)
+    {
+        self::$contexts['ETNA\FeatureContext\MainContext']->setParameter($name, $value);
+    }
+
+    /**
+     * @BeforeScenario
+     */
+    public function setUpScenarioDirectories(BeforeScenarioScope $scope)
+    {
+        $this->results_path  = realpath(dirname($scope->getFeature()->getFile())) . '/results/';
+        $this->requests_path = realpath(dirname($scope->getFeature()->getFile())) . '/requests/';
+    }
+
+    protected function handleErrors($data, $errors)
+    {
+        if ($nb_err = count($errors)) {
+            echo json_encode($data, JSON_PRETTY_PRINT);
+            throw new \Exception("{$nb_err} errors :\n" . implode("\n", $errors));
+        }
+    }
+
     /**
      * Valide l'égalité de 2 valeurs ($expected_value & $found_value)
      *
@@ -17,7 +80,7 @@ trait Check
      */
     protected function check($expected_value, $found_value, $prefix, &$errors)
     {
-        if (true === is_string($expected_value) && $expected_value === "#Array#") {
+        if (true === is_string($expected_value) && "#Array#" === $expected_value) {
             if (false === is_array($found_value)) {
                 $errors[] = sprintf("%-35s: not an array", $prefix);
             }
@@ -26,9 +89,9 @@ trait Check
         }
 
         $is_string   = (true === is_string($expected_value));
-        $sharp_start = ($is_string && substr($expected_value, 0, 1) === "#");
-        $sharp_end   = ($is_string && substr($expected_value, -1, 1) === "#");
-        if ($is_string === true && $sharp_start === true && $sharp_end === true) {
+        $sharp_start = ($is_string && "#" === substr($expected_value, 0, 1));
+        $sharp_end   = ($is_string && "#" === substr($expected_value, -1, 1));
+        if (true === $is_string && true === $sharp_start && true === $sharp_end) {
             if (1 !== preg_match($expected_value, $found_value)) {
                 $errors[] = sprintf(
                     "%-35s: regex error : '%s' does not match '%s'",
