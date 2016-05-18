@@ -137,7 +137,6 @@ class RabbitContext extends BaseContext
         }
 
         $body          = file_get_contents($this->results_path . $body);
-        $parsed_wanted = json_decode($body);
 
         self::$silex_app["rabbit.consumer"][$queue]->consume(1);
         $parsed_response = json_decode(self::$silex_app["TestConsumer"]->message->body);
