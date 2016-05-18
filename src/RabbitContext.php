@@ -119,7 +119,7 @@ class RabbitContext extends BaseContext
     {
 
         $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
-        $channel->basic_consume($queue, "email", false, false, false, false, function ($msg) use ($body) {
+        $channel->basic_consume($queue, $queue, false, false, false, false, function ($msg) {
             $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
 
             if (empty($msg->body)) {
@@ -140,10 +140,10 @@ class RabbitContext extends BaseContext
             }
         }
 
-        $body          = file_get_contents($this->results_path . $body);
-
+        $body    = file_get_contents($this->results_path . $body);
         $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
-        $channel->basic_consume($queue, "email", false, false, false, false, function ($msg) use ($body) {
+
+        $channel->basic_consume($queue, $queue, false, false, false, false, function ($msg) use ($body) {
             $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
 
             if (json_decode($msg->body) != json_decode($body)) {
@@ -159,7 +159,7 @@ class RabbitContext extends BaseContext
     public function ilDoitYAvoirUnMessageDansLaFileEnJSON($queue = null)
     {
         $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
-        $channel->basic_consume($queue, "email", false, false, false, false, function ($msg) use ($body) {
+        $channel->basic_consume($queue, $queue, false, false, false, false, function ($msg) {
             $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
 
             if (!json_decode($msg->body)) {
