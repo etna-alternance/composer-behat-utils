@@ -2,17 +2,21 @@
 
 namespace ETNA\FeatureContext;
 
+use Guzzle\Http\Client;
+
 class RabbitContext extends BaseContext
 {
-    private $vhosts = ["/test-behat"];
+    public static $vhosts = ["/test-behat"];
 
     private static function getRabbitMqClient()
     {
-        return new Client([
-            "base_uri" => "http://127.0.0.1:15672",
-            "headers"  => ["Content-Type" => "application/json"],
-            "auth"     => ["guest", "guest"]
-        ]);
+        return new Client(
+            "http://127.0.0.1:15672",
+            [
+                "headers"  => ["Content-Type" => "application/json"],
+                "auth"     => ["guest", "guest"]
+            ]
+        );
     }
 
     /**
@@ -26,7 +30,6 @@ class RabbitContext extends BaseContext
             $vhost = str_replace('/', '%2f', $vhost);
 
             $client->put("/api/vhosts/{$vhost}");
-
             $client->put(
                 "/api/permissions/{$vhost}/guest",
                 [
@@ -114,20 +117,12 @@ class RabbitContext extends BaseContext
      */
     public function ilDoitYAvoirUnMessageDansLaFile($queue = null)
     {
-        self::$silex_app["amqp.queues"][$queue]->listen(
-            function ($msg) {
-                $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
-                $body = json_decode($msg->body);
-                if (empty($body)) {
-                    throw new \Exception("{$msg->body}");
-                }
-            },
-            false,
-            false,
-            false,
-            false
-        );
-        $app["amqp.chans"]["default"]->wait();
+        self::$silex_app["rabbit.consumer"][$queue]->consume(1);
+        $body = json_decode(self::$silex_app["TestConsumer"]->message->body);
+
+        if (empty($body)) {
+            throw new \Exception("{$msg->body}");
+        }
     }
 
     /**
@@ -144,12 +139,9 @@ class RabbitContext extends BaseContext
         $body          = file_get_contents($this->results_path . $body);
         $parsed_wanted = json_decode($body);
 
-        $channel = self::$silex_app["amqp.queues"][$queue]->getChannel();
-
-        $response_msg    = $channel->basic_get($queue);
-        $parsed_response = json_decode($response_msg->body);
-
-        $this->response[$queue] = $parsed_response;
+        self::$silex_app["rabbit.consumer"][$queue]->consume(1);
+        $parsed_response = json_decode(self::$silex_app["TestConsumer"]->message->body);
+        $parsed_wanted   = json_decode($body);
 
         $this->check($parsed_wanted, $parsed_response, "result", $errors);
         $this->handleErrors($parsed_response, $errors);
@@ -160,12 +152,8 @@ class RabbitContext extends BaseContext
     */
     public function ilDoitYAvoirUnMessageDansLaFileEnJSON($queue = null)
     {
-        $channel = self::$silex_app["amqp.queues"][$queue]->getChannel();
-
-        $response_msg    = $channel->basic_get($queue);
-        $parsed_response = json_decode($response_msg->body);
-
-        $this->response[$queue] = $parsed_response;
+        self::$silex_app["rabbit.consumer"][$queue]->consume(1);
+        $parsed_response = json_decode(self::$silex_app["TestConsumer"]->message->body);
 
         if (!$parsed_response) {
             throw new \Exception("Error: Queue {$queue} is empty");
