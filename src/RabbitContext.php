@@ -117,12 +117,16 @@ class RabbitContext extends BaseContext
      */
     public function ilDoitYAvoirUnMessageDansLaFile($queue = null)
     {
-        self::$silex_app["rabbit.consumer"][$queue]->consume(1);
-        $body = json_decode(self::$silex_app["TestConsumer"]->message->body);
 
-        if (empty($body)) {
-            throw new \Exception("{$msg->body}");
-        }
+        $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
+        $channel->basic_consume($queue, "email", false, false, false, false, function ($msg) use ($body) {
+            $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
+
+            if (empty($msg->body)) {
+                throw new \Exception("{$msg->body} != {$body}");
+            }
+        });
+        $channel->wait();
     }
 
     /**
@@ -138,12 +142,15 @@ class RabbitContext extends BaseContext
 
         $body          = file_get_contents($this->results_path . $body);
 
-        self::$silex_app["rabbit.consumer"][$queue]->consume(1);
-        $parsed_response = json_decode(self::$silex_app["TestConsumer"]->message->body);
-        $parsed_wanted   = json_decode($body);
+        $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
+        $channel->basic_consume($queue, "email", false, false, false, false, function ($msg) use ($body) {
+            $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
 
-        $this->check($parsed_wanted, $parsed_response, "result", $errors);
-        $this->handleErrors($parsed_response, $errors);
+            if (json_decode($msg->body) != json_decode($body)) {
+                throw new \Exception("{$msg->body} != {$body}");
+            }
+        });
+        $channel->wait();
     }
 
     /**
@@ -151,12 +158,15 @@ class RabbitContext extends BaseContext
     */
     public function ilDoitYAvoirUnMessageDansLaFileEnJSON($queue = null)
     {
-        self::$silex_app["rabbit.consumer"][$queue]->consume(1);
-        $parsed_response = json_decode(self::$silex_app["TestConsumer"]->message->body);
+        $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
+        $channel->basic_consume($queue, "email", false, false, false, false, function ($msg) use ($body) {
+            $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
 
-        if (!$parsed_response) {
-            throw new \Exception("Error: Queue {$queue} is empty");
-        }
+            if (!json_decode($msg->body)) {
+                throw new \Exception("{$msg->body} != {$body}");
+            }
+        });
+        $channel->wait();
     }
 
 }
