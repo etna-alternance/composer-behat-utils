@@ -3,6 +3,11 @@
 namespace ETNA\FeatureContext;
 
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
+use PHP_CodeCoverage_Filter;
+use PHP_CodeCoverage;
+use PHP_CodeCoverage_Report_PHP;
+use PHP_CodeCoverage_Report_HTML;
+use PHP_CodeCoverage_Report_Clover;
 
 class CoverageContext extends BaseContext
 {
