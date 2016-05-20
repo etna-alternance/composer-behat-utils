@@ -2,17 +2,21 @@
 
 namespace ETNA\FeatureContext;
 
+use Guzzle\Http\Client;
+
 class RabbitContext extends BaseContext
 {
-    private $vhosts = ["/test-behat"];
+    public static $vhosts = ["/test-behat"];
 
     private static function getRabbitMqClient()
     {
-        return new Client([
-            "base_uri" => "http://127.0.0.1:15672",
-            "headers"  => ["Content-Type" => "application/json"],
-            "auth"     => ["guest", "guest"]
-        ]);
+        return new Client(
+            "http://127.0.0.1:15672",
+            [
+                "headers"  => ["Content-Type" => "application/json"],
+                "auth"     => ["guest", "guest"]
+            ]
+        );
     }
 
     /**
@@ -26,7 +30,6 @@ class RabbitContext extends BaseContext
             $vhost = str_replace('/', '%2f', $vhost);
 
             $client->put("/api/vhosts/{$vhost}");
-
             $client->put(
                 "/api/permissions/{$vhost}/guest",
                 [
@@ -110,66 +113,51 @@ class RabbitContext extends BaseContext
     }
 
     /**
-     * @Given /^il doit y avoir un message dans la file "([^"]*)"$/
+     * @Given /le producer "([^"]*)" devrait avoir publié un message dans la queue "([^"]*)"$/
      */
-    public function ilDoitYAvoirUnMessageDansLaFile($queue = null)
+    public function leProducerDevraitAvoirPublieUnMessageDansLaQueue($producer, $queue)
     {
-        self::$silex_app["amqp.queues"][$queue]->listen(
-            function ($msg) {
-                $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
-                $body = json_decode($msg->body);
-                if (empty($body)) {
-                    throw new \Exception("{$msg->body}");
-                }
-            },
-            false,
-            false,
-            false,
-            false
-        );
-        $app["amqp.chans"]["default"]->wait();
+        $this->fetchMessage($producer, $queue);
     }
 
     /**
-     * @Given /^il doit y avoir un message dans la file "([^"]*)" avec le corps contenu dans "([^"]*)"$/
-    */
-    public function ilDoitYAvoirUnMessageDansLaFileAvecLeCorpsContenuDans($queue = null, $body = null)
+     * @Given /le producer "([^"]*)" devrait avoir publié un message dans la queue "([^"]*)" avec le corps contenu dans "([^"]*)"$/
+     */
+    public function leProducerDevraitAvoirPublieUnMessageDansLaQueueAvecLeCorpsContenuDans($producer, $queue, $body)
     {
-        if (null !== $body) {
-            if (!file_exists($this->results_path . $body)) {
-                throw new \Exception("File not found : {$this->results_path}${body}");
-            }
+        if (!file_exists($this->results_path . $body)) {
+            throw new \Exception("File not found : {$this->results_path}${body}");
         }
 
-        $body          = file_get_contents($this->results_path . $body);
-        $parsed_wanted = json_decode($body);
+        $body = file_get_contents($this->results_path . $body);
+        $msg  = $this->fetchMessage($producer, $queue);
 
-        $channel = self::$silex_app["amqp.queues"][$queue]->getChannel();
-
-        $response_msg    = $channel->basic_get($queue);
-        $parsed_response = json_decode($response_msg->body);
-
-        $this->response[$queue] = $parsed_response;
-
-        $this->check($parsed_wanted, $parsed_response, "result", $errors);
-        $this->handleErrors($parsed_response, $errors);
+        if (json_decode($msg) != json_decode($body)) {
+            throw new \Exception("{$msg} != {$body}");
+        }
     }
 
     /**
-     * @Given /^il doit y avoir un message dans la file "([^"]*)" en JSON$/
-    */
-    public function ilDoitYAvoirUnMessageDansLaFileEnJSON($queue = null)
+     * @Given /le producer "([^"]*)" devrait avoir publié un message dans la queue "([^"]*)" en JSON$/
+     */
+    public function leProducerDevraitAvoirPublieUnMessageDansLaQueueEnJSON($producer, $queue, $body)
     {
-        $channel = self::$silex_app["amqp.queues"][$queue]->getChannel();
+        $msg = $this->fetchMessage($producer, $queue);
 
-        $response_msg    = $channel->basic_get($queue);
-        $parsed_response = json_decode($response_msg->body);
-
-        $this->response[$queue] = $parsed_response;
-
-        if (!$parsed_response) {
-            throw new \Exception("Error: Queue {$queue} is empty");
+        if (!json_decode($msg)) {
+            throw new \Exception("Invalid JSON message");
         }
     }
 
+    private function fetchMessage($producer, $queue)
+    {
+        $channel = self::$silex_app["rabbit.producer"][$producer]->getChannel();
+        $message = $channel->basic_get($queue, true);
+
+        if (null === $message) {
+            throw new \Exception("Queue {$queue} is empty");
+        }
+
+        return $message->body;
+    }
 }
