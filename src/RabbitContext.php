@@ -113,60 +113,51 @@ class RabbitContext extends BaseContext
     }
 
     /**
-     * @Given /^il doit y avoir un message dans la file "([^"]*)"$/
+     * @Given /le producer "([^"]*)" devrait avoir publié un message dans la queue "([^"]*)"$/
      */
-    public function ilDoitYAvoirUnMessageDansLaFile($queue = null)
+    public function leProducerDevraitAvoirPublieUnMessageDansLaQueue($producer, $queue)
     {
-
-        $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
-        $channel->basic_consume($queue, $queue, false, false, false, false, function ($msg) {
-            $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
-
-            if (empty($msg->body)) {
-                throw new \Exception("{$msg->body} != {$body}");
-            }
-        });
-        $channel->wait();
+        $this->fetchMessage($producer, $queue);
     }
 
     /**
-     * @Given /^il doit y avoir un message dans la file "([^"]*)" avec le corps contenu dans "([^"]*)"$/
-    */
-    public function ilDoitYAvoirUnMessageDansLaFileAvecLeCorpsContenuDans($queue = null, $body = null)
+     * @Given /le producer "([^"]*)" devrait avoir publié un message dans la queue "([^"]*)" avec le corps contenu dans "([^"]*)"$/
+     */
+    public function leProducerDevraitAvoirPublieUnMessageDansLaQueueAvecLeCorpsContenuDans($producer, $queue, $body)
     {
-        if (null !== $body) {
-            if (!file_exists($this->results_path . $body)) {
-                throw new \Exception("File not found : {$this->results_path}${body}");
-            }
+        if (!file_exists($this->results_path . $body)) {
+            throw new \Exception("File not found : {$this->results_path}${body}");
         }
 
-        $body    = file_get_contents($this->results_path . $body);
-        $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
+        $body = file_get_contents($this->results_path . $body);
+        $msg  = $this->fetchMessage($producer, $queue);
 
-        $channel->basic_consume($queue, $queue, false, false, false, false, function ($msg) use ($body) {
-            $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
-
-            if (json_decode($msg->body) != json_decode($body)) {
-                throw new \Exception("{$msg->body} != {$body}");
-            }
-        });
-        $channel->wait();
+        if (json_decode($msg) != json_decode($body)) {
+            throw new \Exception("{$msg} != {$body}");
+        }
     }
 
     /**
-     * @Given /^il doit y avoir un message dans la file "([^"]*)" en JSON$/
-    */
-    public function ilDoitYAvoirUnMessageDansLaFileEnJSON($queue = null)
+     * @Given /le producer "([^"]*)" devrait avoir publié un message dans la queue "([^"]*)" en JSON$/
+     */
+    public function leProducerDevraitAvoirPublieUnMessageDansLaQueueEnJSON($producer, $queue, $body)
     {
-        $channel = self::$silex_app["rabbit.consumer"][$queue]->getChannel();
-        $channel->basic_consume($queue, $queue, false, false, false, false, function ($msg) {
-            $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
+        $msg = $this->fetchMessage($producer, $queue);
 
-            if (!json_decode($msg->body)) {
-                throw new \Exception("{$msg->body} != {$body}");
-            }
-        });
-        $channel->wait();
+        if (!json_decode($msg)) {
+            throw new \Exception("Invalid JSON message");
+        }
     }
 
+    private function fetchMessage($producer, $queue)
+    {
+        $channel = self::$silex_app["rabbit.producer"][$producer]->getChannel();
+        $message = $channel->basic_get($queue, true);
+
+        if (null === $message) {
+            throw new \Exception("Queue {$queue} is empty");
+        }
+
+        return $message->body;
+    }
 }
