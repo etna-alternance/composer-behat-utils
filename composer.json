@@ -13,10 +13,12 @@
     "require": {
         "php": ">=5.5",
         "behat/behat": "3.x",
-        "phpunit/php-code-coverage": "~2.0",
-        "phpunit/phpcov": "~2.0",
         "guzzlehttp/guzzle": "~6.1",
         "etna/php-rsa": "~0.2.0"
+    },
+    "require-dev": {
+        "phpunit/php-code-coverage": "~2.0",
+        "phpunit/phpcov": "~2.0"
     },
     "autoload": {
         "psr-4": {
