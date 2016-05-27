@@ -46,7 +46,7 @@ class CoverageContext extends BaseContext
         }
 
         $filter = new PHP_CodeCoverage_Filter();
-        if (true === isset(self::$_coverage_params['blacklist']) && true === is_array(self::$_coverage_params['blacklist'])) {
+        if (method_exists($filter, 'addDirectoryToBlacklist') && true === isset(self::$_coverage_params['blacklist']) && true === is_array(self::$_coverage_params['blacklist'])) {
             foreach (self::$_coverage_params['blacklist'] as $blackElem) {
                 $filter->addDirectoryToBlacklist(getcwd() . "/{$blackElem}");
             }
