@@ -2,7 +2,7 @@
 
 namespace ETNA\FeatureContext;
 
-use Guzzle\Http\Client;
+use GuzzleHttp\Client;
 
 class RabbitContext extends BaseContext
 {
@@ -11,8 +11,8 @@ class RabbitContext extends BaseContext
     private static function getRabbitMqClient()
     {
         return new Client(
-            "http://127.0.0.1:15672",
             [
+                "base_uri" => "http://127.0.0.1:15672",
                 "headers"  => ["Content-Type" => "application/json"],
                 "auth"     => ["guest", "guest"]
             ]
