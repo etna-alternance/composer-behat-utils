@@ -2,7 +2,7 @@
 
 namespace ETNA\FeatureContext;
 
-use Guzzle\Http\Client;
+use GuzzleHttp\Client;
 
 class RabbitContext extends BaseContext
 {
@@ -10,11 +10,15 @@ class RabbitContext extends BaseContext
 
     private static function getRabbitMqClient()
     {
+        $rmq_url  = getenv("RABBITMQ_URL");
+        $config   = parse_url($rmq_url);
+        $base_uri = "{$config['scheme']}://{$config['host']}:15672";
+
         return new Client(
-            "http://127.0.0.1:15672",
             [
+                "base_uri" => $base_uri,
                 "headers"  => ["Content-Type" => "application/json"],
-                "auth"     => ["guest", "guest"]
+                "auth"     => [$config["user"], $config["pass"]]
             ]
         );
     }
@@ -54,15 +58,6 @@ class RabbitContext extends BaseContext
             $vhost = str_replace('/', '%2f', $vhost);
             $client->delete("/api/vhosts/{$vhost}");
         }
-    }
-
-    /**
-     * @BeforeFeature @moulinetteJob
-     */
-    public static function bindMoulinetteQueue()
-    {
-        $channel = self::$silex_app["amqp.exchanges"]["default"]->getChannel();
-        $channel->queue_declare("quest_moulinette", false, true, false, false)[0];
     }
 
     private function getNode($node, $response)
