@@ -8,6 +8,16 @@ class RabbitContext extends BaseContext
 {
     public static $vhosts = ["/test-behat"];
 
+    /**
+     * @BeforeSuite
+     */
+    public static function loadEnv()
+    {
+        if (file_exists('./app/env/' . getenv('APPLICATION_ENV') . '.php')) {
+            require_once './app/env/' . getenv('APPLICATION_ENV') . '.php';
+        }
+    }
+
     private static function getRabbitMqClient()
     {
         $rmq_url  = getenv("RABBITMQ_URL");
