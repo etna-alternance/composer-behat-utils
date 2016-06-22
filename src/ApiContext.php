@@ -10,6 +10,7 @@ class ApiContext extends BaseContext
 {
     private $base_url;
     private $request;
+    private $response;
 
     /**
      * Initializes context.
@@ -33,6 +34,11 @@ class ApiContext extends BaseContext
     public function setRequest($request)
     {
         $this->request = $request;
+    }
+
+    public function getResponse()
+    {
+        return $this->response;
     }
 
     /**
@@ -163,6 +169,20 @@ class ApiContext extends BaseContext
             }
         } else {
             throw new \Exception("Invalid filename");
+        }
+    }
+
+    /**
+     * @Then /^le résultat devrait être identique au fichier csv "(.*)"$/
+     */
+    public function leResultatDevraitRessemblerAuFichierCsv($filename)
+    {
+        $filepath         = realpath($this->results_path . "/" . $filename);
+        $expected_content = trim(file_get_contents($filepath), "\n");
+        if ($expected_content !== $this->response['body']) {
+            echo "\n", $expected_content, "\n\n";
+            echo $this->response['body'], "\n\n";
+            throw new \Exception("CSVs results are not the same");
         }
     }
 
