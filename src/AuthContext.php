@@ -3,21 +3,11 @@
 namespace ETNA\FeatureContext;
 
 use ETNA\FeatureContext as EtnaFeatureContext;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Hook\Scope\AfterStepScope;
 
 class AuthContext extends BaseContext
 {
     private $request;
     static private $rsa = null;
-
-    /** @BeforeScenario */
-    public function getRequest(BeforeScenarioScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        $this->request = $environment->getContext('ETNA\FeatureContext\ApiContext')->getRequest();
-    }
 
     /**
      * @Given /^que je suis authentifié en tant que "([^"]*)"(?: depuis (\d+) minutes?)?(?: avec les roles "([^"]*)")?(?: avec l'id (\d+))?/
@@ -44,15 +34,12 @@ class AuthContext extends BaseContext
             "signature" => self::$rsa->sign($identity),
         ];
 
-        $this->request["cookies"]["authenticator"] = base64_encode(json_encode($identity));
-    }
+        $api_context = $this->getContext('ETNA\FeatureContext\ApiContext');
+        $request     = $api_context->getRequest();
 
-    /** @AfterStep */
-    public function setRequest(AfterStepScope $scope)
-    {
-        $environment = $scope->getEnvironment();
-
-        $environment->getContext('ETNA\FeatureContext\ApiContext')->setRequest($this->request);
+        // Set le cookie
+        $request["cookies"]["authenticator"] = base64_encode(json_encode($identity));
+        $api_context->setRequest($request);
     }
 
     /**

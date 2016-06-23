@@ -2,6 +2,8 @@
 
 namespace ETNA\FeatureContext;
 
+use Behat\Gherkin\Node\TableNode;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -94,6 +96,19 @@ class ApiContext extends BaseContext
         $this->getContext('ETNA\FeatureContext\DoctrineContext')->checkMaxQueries($method, $result);
 
         $this->response = $result;
+    }
+
+    /**
+     * @Given /^j\'upload les documents$/
+     */
+    public function jUploadLesDocuments(TableNode $files)
+    {
+        foreach ($files->getHash() as $file) {
+            $filename = $file["file"];
+            $path     = realpath("{$this->requests_path}/{$file["file"]}");
+
+            $this->request["files"][$file["name"]] = new UploadedFile($path, $filename);
+        }
     }
 
     /**
