@@ -70,53 +70,6 @@ class RabbitContext extends BaseContext
         }
     }
 
-    private function getNode($node, $response)
-    {
-        $nodes        = explode('/', $node);
-        $response     = json_decode(json_encode($response), true);
-        $current_node = $response;
-
-        foreach ($nodes as $key_node => $node) {
-            if (!in_array($node, array_keys($current_node))) {
-                throw new \Exception("Node {$node} not found");
-            }
-            $current_node = $current_node[$node];
-        }
-
-        return $current_node;
-    }
-
-    /**
-     * @Given /^"([^"]*)" devrait contenir "([^"]*)"(?: dans la file "([^"]*)"?)?$/
-     */
-    public function devraitContenir($node, $node_value, $queue_name = null)
-    {
-        $response = (null === $queue_name) ? $this->data : $this->response["{$queue_name}"][0];
-
-        $current_node_value = json_encode($this->getNode($node, $response));
-
-        $node_value         = str_replace('"', '', $node_value);
-        $current_node_value = str_replace('"', '', $current_node_value);
-
-        $this->check($node_value, $current_node_value, '', $errors);
-        if ($nb_err = count($errors)) {
-            throw new \Exception("{$nb_err} errors :\n" . implode("\n", $errors));
-        }
-    }
-
-    /**
-     * @Given /^"([^"]*)" devrait contenir (\d+) résultats(?: dans la file "([^"]*)")?$/
-     */
-    public function devraitContenirResultats($node, $length, $queue_name = null)
-    {
-        $response = (null === $queue_name) ? $this->data : $this->response["{$queue_name}"][0];
-
-        $current_node = $this->getNode($node, $response);
-        if ($length != count($current_node)) {
-            throw new \Exception("Invalid node length " . count($current_node) . " != {$length}");
-        }
-    }
-
     /**
      * @Given /le producer "([^"]*)" devrait avoir publié un message dans la queue "([^"]*)"$/
      */
@@ -134,11 +87,13 @@ class RabbitContext extends BaseContext
             throw new \Exception("File not found : {$this->results_path}${body}");
         }
 
-        $body = file_get_contents($this->results_path . $body);
+        $body = json_decode(file_get_contents($this->results_path . $body));
         $msg  = $this->fetchMessage($producer, $queue);
 
-        if (json_decode($msg) != json_decode($body)) {
-            throw new \Exception("{$msg} != {$body}");
+        $this->check($body, json_decode($msg), "result", $errors);
+        if ($nb_err = count($errors)) {
+            echo json_encode($msg, JSON_PRETTY_PRINT);
+            throw new \Exception("{$nb_err} errors :\n" . implode("\n", $errors));
         }
     }
 
