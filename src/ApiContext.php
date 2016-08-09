@@ -265,4 +265,51 @@ class ApiContext extends BaseContext
             throw new \Exception("{$this->data} is not an object");
         }
     }
+
+    private function getNode($node, $response)
+    {
+        $nodes        = explode('/', $node);
+        $response     = json_decode(json_encode($response), true);
+        $current_node = $response;
+
+        foreach ($nodes as $key_node => $node) {
+            if (!in_array($node, array_keys($current_node))) {
+                throw new \Exception("Node {$node} not found");
+            }
+            $current_node = $current_node[$node];
+        }
+
+        return $current_node;
+    }
+
+    /**
+     * @Given /^"([^"]*)" devrait contenir "([^"]*)"$/
+     */
+    public function devraitContenir($node, $node_value, $queue_name = null)
+    {
+        $response = $this->data;
+
+        $current_node_value = json_encode($this->getNode($node, $response));
+
+        $node_value         = str_replace('"', '', $node_value);
+        $current_node_value = str_replace('"', '', $current_node_value);
+
+        $this->check($node_value, $current_node_value, '', $errors);
+        if ($nb_err = count($errors)) {
+            throw new \Exception("{$nb_err} errors :\n" . implode("\n", $errors));
+        }
+    }
+
+    /**
+     * @Given /^"([^"]*)" devrait contenir (\d+) résultats$/
+     */
+    public function devraitContenirResultats($node, $length, $queue_name = null)
+    {
+        $response = $this->data;
+
+        $current_node = $this->getNode($node, $response);
+        if ($length != count($current_node)) {
+            throw new \Exception("Invalid node length " . count($current_node) . " != {$length}");
+        }
+    }
 }
