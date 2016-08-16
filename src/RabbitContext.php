@@ -120,4 +120,34 @@ class RabbitContext extends BaseContext
 
         return $message->body;
     }
+
+    /**
+     * @Given /que le producer "([^"]*)" publie un job avec le corps contenu dans "([^"]*)"/
+     */
+    public function queLeProducerPublieUnJobAvecLeCorpsContenuDans($producer, $body)
+    {
+        if (!file_exists($this->requests_path . $body)) {
+            throw new \Exception("File not found : {$this->requests_path}${body}");
+        }
+
+        $body = json_decode(file_get_contents($this->requests_path . $body));
+        if (false === isset(self::$silex_app['rabbit.producer'][$producer])) {
+            throw new \Exception("Producer {$producer} not found");
+        }
+
+        $routing_key = self::$silex_app['rabbit.producers'][$producer]['queue_options']['routing_keys'][0];
+        self::$silex_app['rabbit.producer'][$producer]->publish(json_encode($body), $routing_key);
+    }
+
+    /**
+     * @Given /je traite (\d+) jobs avec le consumer "([^"]*)"/
+     */
+    public function jeTraiteJobsAvecLeConsumer($nb_jobs, $consumer)
+    {
+        if (false === isset(self::$silex_app['rabbit.consumer'][$consumer])) {
+            throw new \Exception("Consumer {$consumer} not found");
+        }
+
+        self::$silex_app['rabbit.consumer'][$consumer]->consume($nb_jobs);
+    }
 }
