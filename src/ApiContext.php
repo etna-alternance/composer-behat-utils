@@ -74,6 +74,10 @@ class ApiContext extends BaseContext
             // add content-length ...
         }
 
+        if (null === $body && isset($this->request["headers"]["Content-Type"])) {
+            unset($this->request["headers"]["Content-Type"]);
+        }
+
         $request = Request::create($this->base_url . $url, $method, [], [], [], [], $body);
         $request->headers->add($this->request["headers"]);
         $request->cookies->add($this->request["cookies"]);
