@@ -58,7 +58,7 @@ class DoctrineContext extends BaseContext
     }
 
     /**
-     * @Given /^que j\'ai le droit de faire (\d+) requetes SQL$/
+     * @Given /^j\'ai le droit de faire (\d+) requetes SQL$/
      */
     public function queJaiLeDroitDeFaireRequetesSql($nb)
     {

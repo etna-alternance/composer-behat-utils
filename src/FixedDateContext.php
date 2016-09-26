@@ -59,7 +59,7 @@ class FixedDateContext extends BaseContext
     }
 
     /**
-     * @Given /^que la date est "([^"]*)"$/
+     * @Given /^la date est "([^"]*)"$/
      */
     public function queLaDateEst($new_date)
     {
