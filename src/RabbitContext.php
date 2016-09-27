@@ -122,7 +122,7 @@ class RabbitContext extends BaseContext
     }
 
     /**
-     * @Given /que le producer "([^"]*)" publie un job avec le corps contenu dans "([^"]*)"/
+     * @Given /le producer "([^"]*)" publie un job avec le corps contenu dans "([^"]*)"/
      */
     public function queLeProducerPublieUnJobAvecLeCorpsContenuDans($producer, $body)
     {
