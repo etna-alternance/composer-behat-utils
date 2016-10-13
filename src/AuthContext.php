@@ -12,7 +12,7 @@ class AuthContext extends BaseContext
     /**
      * @Given /^je suis authentifié en tant que "([^"]*)"(?: depuis (\d+) minutes?)?(?: avec les roles "([^"]*)")?(?: avec l'id (\d+))?/
      */
-    public function queJeSuisAuthentifieEnTantQue($login, $duration = 1, $roles = "", $id = 1)
+    public function JeSuisAuthentifieEnTantQue($login, $duration = 1, $roles = "", $id = 1)
     {
         $duration = intval($duration);
         $id       = intval($id);

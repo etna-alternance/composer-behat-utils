@@ -60,7 +60,7 @@ class DoctrineContext extends BaseContext
     /**
      * @Given /^j\'ai le droit de faire (\d+) requetes SQL$/
      */
-    public function queJaiLeDroitDeFaireRequetesSql($nb)
+    public function JaiLeDroitDeFaireRequetesSql($nb)
     {
         self::$max_queries = $nb;
     }
