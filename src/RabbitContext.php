@@ -122,9 +122,9 @@ class RabbitContext extends BaseContext
     }
 
     /**
-     * @Given /que le producer "([^"]*)" publie un job avec le corps contenu dans "([^"]*)"/
+     * @Given /le producer "([^"]*)" publie un job avec le corps contenu dans "([^"]*)"/
      */
-    public function queLeProducerPublieUnJobAvecLeCorpsContenuDans($producer, $body)
+    public function leProducerPublieUnJobAvecLeCorpsContenuDans($producer, $body)
     {
         if (!file_exists($this->requests_path . $body)) {
             throw new \Exception("File not found : {$this->requests_path}${body}");

@@ -10,9 +10,9 @@ class AuthContext extends BaseContext
     static private $rsa = null;
 
     /**
-     * @Given /^je suis authentifié en tant que "([^"]*)"(?: depuis (\d+) minutes?)?(?: avec les roles "([^"]*)")?(?: avec l'id (\d+))?/
+     * @Given /je suis authentifié en tant que "([^"]*)"(?: depuis (\d+) minutes?)?(?: avec les roles "([^"]*)")?(?: avec l'id (\d+))?/
      */
-    public function queJeSuisAuthentifieEnTantQue($login, $duration = 1, $roles = "", $id = 1)
+    public function jeSuisAuthentifieEnTantQue($login, $duration = 1, $roles = "", $id = 1)
     {
         $duration = intval($duration);
         $id       = intval($id);
