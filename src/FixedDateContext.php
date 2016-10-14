@@ -59,9 +59,9 @@ class FixedDateContext extends BaseContext
     }
 
     /**
-     * @Given /^la date est "([^"]*)"$/
+     * @Given /la date est "([^"]*)"$/
      */
-    public function LaDateEst($new_date)
+    public function laDateEst($new_date)
     {
         self::$_custom_date = $new_date;
 
