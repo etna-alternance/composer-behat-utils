@@ -316,4 +316,40 @@ class ApiContext extends BaseContext
             throw new \Exception("Invalid node length " . count($current_node) . " != {$length}");
         }
     }
+
+    /**
+     * @Given /^je souhaite comparer les deux XML "([^"]*)" et "([^"]*)"$/
+     */
+    public function jeSouhaiteComparerLesDeuxXmlEt($xml1, $xml2)
+    {
+        $xml1 = simplexml_load_string(file_get_contents("./Tests/Data/{$xml1}"));
+        $xml2 = simplexml_load_string(file_get_contents("./Tests/Data/{$xml2}"));
+        try {
+            $this->data = \Module\Utils\ChecklistFormatter::xml_is_equal($xml1, $xml2);
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage());
+        }
+    }
+
+    /**
+     * @Then /^les deux fichiers doivent être identiques$/
+     */
+    public function lesDeuxFichiersDoiventEtreIdentiques($bool = true)
+    {
+        if (!$bool === $this->data) {
+            throw new \Exception($exception->getMessage());
+        }
+    }
+
+    /**
+     * @Given /^je veux récupérer les UVs entre "([^"]*)" et "([^"]*)"$/
+     */
+    public function jeVeuxRecupererLesUvsEntre($start, $end)
+    {
+        try {
+            $this->data = json_decode(\Module\Utils\GetUVsUtils::getUVs(self::$silex_app, $start, $end));
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage());
+        }
+    }
 }
