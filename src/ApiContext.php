@@ -342,14 +342,26 @@ class ApiContext extends BaseContext
     }
 
     /**
-     * @Given /^je veux récupérer les UVs entre "([^"]*)" et "([^"]*)"$/
+     * @Given /^je devrais avoir un résultat d\'API en PNG$/
      */
-    public function jeVeuxRecupererLesUvsEntre($start, $end)
+    public function jeDevraisAvoirUnResultatDApiEnPng()
     {
-        try {
-            $this->data = json_decode(\Module\Utils\GetUVsUtils::getUVs(self::$silex_app, $start, $end));
-        } catch (\Exception $exception) {
-            throw new \Exception($exception->getMessage());
+        if ("image/png" !== $this->response["headers"]["content-type"]) {
+            throw new \Exception("Invalid response type");
+        }
+    }
+
+    /**
+     * @Then /^l'image devrait être identique au fichier "(.*)"$/
+     */
+    public function lImageDevraitEtreIdentiqueAuFichier($file)
+    {
+        $file     = realpath($this->results_path . "/" . $file);
+        $md5_file = md5(file_get_contents($file));
+
+        $md5_response = md5($this->response["body"]);
+        if ($md5_file !== $md5_response) {
+            throw new \Exception("Images are not the same");
         }
     }
 }

@@ -2,11 +2,8 @@
 
 namespace ETNA\FeatureContext;
 
-<<<<<<< 3505e1f12756af466bd09677424aa0bbed1c77dc
-=======
 use PhpAmqpLib\Connection\AMQPConnection;
 
->>>>>>> [FEATURE#33794] Ajout de méthode réutilisable partout
 use GuzzleHttp\Client;
 
 class RabbitContext extends BaseContext
