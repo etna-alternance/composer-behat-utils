@@ -217,7 +217,11 @@ class RabbitContext extends BaseContext
     /**
      * @Then /^je déclare la file "([^"]*)" avec la clé de routage "([^"]*)" en liaison avec l'exchange "([^"]*)"$/
      */
-    public function jeDeclareLaFileAvecLaCleDeRoutageEnLiaisonAvecLexchange($queue = null, $routing_key = null, $exchange = null)
+    public function jeDeclareLaFileAvecLaCleDeRoutageEnLiaisonAvecLexchange(
+        $queue = null,
+        $routing_key = null,
+        $exchange = null
+    )
     {
         $this->channel->queue_declare($queue, false, true, false, false);
         $this->channel->queue_bind($queue, $exchange, $routing_key);
@@ -240,10 +244,8 @@ class RabbitContext extends BaseContext
      */
     public function ilDoitYAvoirUnMessageDansLaFileAvecLeCorpsContenuDans($queue = null, $body = null)
     {
-        if (null !== $body) {
-            if (!file_exists($this->results_path . $body)) {
-                throw new Exception("File not found : {$this->results_path}${body}");
-            }
+        if (null !== $body && !file_exists($this->results_path . $body)) {
+            throw new Exception("File not found : {$this->results_path}${body}");
         }
 
         $body          = file_get_contents($this->results_path . $body);
