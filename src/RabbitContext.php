@@ -11,6 +11,7 @@ class RabbitContext extends BaseContext
     public static $vhosts = ["/test-behat"];
     private $channel;
     private $connection;
+    private $response;
 
     public static function createAMQPConnection()
     {
@@ -239,7 +240,7 @@ class RabbitContext extends BaseContext
      */
     public function ilDoitYAvoirUnMessageDansLaFileAvecLeCorpsContenuDans($queue = null, $body = null)
     {
-        if ($body !== null) {
+        if (null !== $body) {
             if (!file_exists($this->results_path . $body)) {
                 throw new Exception("File not found : {$this->results_path}${body}");
             }

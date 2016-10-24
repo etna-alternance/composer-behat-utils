@@ -318,20 +318,6 @@ class ApiContext extends BaseContext
     }
 
     /**
-     * @Given /^je souhaite comparer les deux XML "([^"]*)" et "([^"]*)"$/
-     */
-    public function jeSouhaiteComparerLesDeuxXmlEt($xml1, $xml2)
-    {
-        $xml1 = simplexml_load_string(file_get_contents("./Tests/Data/{$xml1}"));
-        $xml2 = simplexml_load_string(file_get_contents("./Tests/Data/{$xml2}"));
-        try {
-            $this->data = \Module\Utils\ChecklistFormatter::xml_is_equal($xml1, $xml2);
-        } catch (\Exception $exception) {
-            throw new \Exception($exception->getMessage());
-        }
-    }
-
-    /**
      * @Then /^les deux fichiers doivent être identiques$/
      */
     public function lesDeuxFichiersDoiventEtreIdentiques($bool = true)
