@@ -316,4 +316,28 @@ class ApiContext extends BaseContext
             throw new \Exception("Invalid node length " . count($current_node) . " != {$length}");
         }
     }
+
+    /**
+     * @Given /^je devrais avoir un résultat d\'API en PNG$/
+     */
+    public function jeDevraisAvoirUnResultatDApiEnPng()
+    {
+        if ("image/png" !== $this->response["headers"]["content-type"]) {
+            throw new \Exception("Invalid response type");
+        }
+    }
+
+    /**
+     * @Then /^l'image devrait être identique au fichier "(.*)"$/
+     */
+    public function lImageDevraitEtreIdentiqueAuFichier($file)
+    {
+        $file     = realpath($this->results_path . "/" . $file);
+        $md5_file = md5(file_get_contents($file));
+
+        $md5_response = md5($this->response["body"]);
+        if ($md5_file !== $md5_response) {
+            throw new \Exception("Images are not the same");
+        }
+    }
 }
