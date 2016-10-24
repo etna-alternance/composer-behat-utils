@@ -318,16 +318,6 @@ class ApiContext extends BaseContext
     }
 
     /**
-     * @Then /^les deux fichiers doivent être identiques$/
-     */
-    public function lesDeuxFichiersDoiventEtreIdentiques($bool = true)
-    {
-        if (!$bool === $this->data) {
-            throw new \Exception($exception->getMessage());
-        }
-    }
-
-    /**
      * @Given /^je devrais avoir un résultat d\'API en PNG$/
      */
     public function jeDevraisAvoirUnResultatDApiEnPng()

@@ -235,7 +235,7 @@ class RabbitContext extends BaseContext
         $response_msg    = $this->channel->basic_get($queue);
         $parsed_response = json_decode($response_msg->body);
         if (empty($parsed_response)) {
-            throw new Exception("{$parsed_response}");
+            throw new \Exception("{$parsed_response}");
         }
     }
 
@@ -245,7 +245,7 @@ class RabbitContext extends BaseContext
     public function ilDoitYAvoirUnMessageDansLaFileAvecLeCorpsContenuDans($queue = null, $body = null)
     {
         if (null !== $body && !file_exists($this->results_path . $body)) {
-            throw new Exception("File not found : {$this->results_path}${body}");
+            throw new \Exception("File not found : {$this->results_path}${body}");
         }
 
         $body          = file_get_contents($this->results_path . $body);
