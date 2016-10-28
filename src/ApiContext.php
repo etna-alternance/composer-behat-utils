@@ -329,15 +329,16 @@ class ApiContext extends BaseContext
 
     /**
      * @Then /^l'image devrait être identique au fichier "(.*)"$/
+     * @Then /^le PDF devrait être identique au fichier "(.*)"$/
      */
-    public function lImageDevraitEtreIdentiqueAuFichier($file)
+    public function leMd5DuFichierDevraitEtreIdentiqueACeluiDuFichier($file)
     {
         $file     = realpath($this->results_path . "/" . $file);
         $md5_file = md5(file_get_contents($file));
 
         $md5_response = md5($this->response["body"]);
         if ($md5_file !== $md5_response) {
-            throw new \Exception("Images are not the same");
+            throw new \Exception("Files are not the same");
         }
     }
 }
