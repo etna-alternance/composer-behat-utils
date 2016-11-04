@@ -9,42 +9,7 @@ use GuzzleHttp\Client;
 class RabbitContext extends BaseContext
 {
     public static $vhosts = ["/test-behat"];
-    private $channel;
-    private $connection;
     private $response;
-
-    public static function createAMQPConnection()
-    {
-        $rmq_url   = getenv("RABBITMQ_URL");
-        $rmq_vhost = getenv("RABBITMQ_VHOST");
-
-        if (false === $rmq_url) {
-            throw new \Exception('initializeDryRunQueue: RABBITMQ_URL is not defined');
-        }
-
-        if (false === $rmq_vhost) {
-            throw new \Exception('initializeDryRunQueue: RABBITMQ_VHOST is not defined');
-        }
-
-        $config = parse_url($rmq_url);
-        foreach (["host", "port", "user", "pass"] as $config_key) {
-            if (!isset($config[$config_key])) {
-                throw new \Exception("initializeDryRunQueue: Invalid RABBITMQ_URL: cannot resolve {$config_key}");
-            }
-        }
-
-        $connection = new AMQPConnection(
-            $config["host"],
-            $config["port"],
-            $config["user"],
-            $config["pass"],
-            $rmq_vhost
-        );
-
-        $channel = $connection->channel();
-
-        return [$connection, $channel];
-    }
 
     /**
      * @BeforeSuite
@@ -190,49 +155,14 @@ class RabbitContext extends BaseContext
     }
 
     /**
-     * @Then /^je ferme la connexion rabbitmq$/
-     */
-    public function jeFermeLaConnexionRabbitmq()
-    {
-        $this->channel->close();
-        $this->connection->close();
-    }
-
-    /**
-     * @Then /^je crée une connexion rabbitmq$/
-     */
-    public function jeCreeUneConnexionRabbitmq()
-    {
-        list($this->connection, $this->channel) = self::createAMQPConnection();
-    }
-
-    /**
-     * @Then /^je crée l'exchange "([^"]*)" de type "([^"]*)"$/
-     */
-    public function jeCreeLexchangeDeType($exchange_name, $exchange_type)
-    {
-        $this->channel->exchange_declare($exchange_name, $exchange_type, false, true, false);
-    }
-
-    /**
-     * @Then /^je déclare la file "([^"]*)" avec la clé de routage "([^"]*)" en liaison avec l'exchange "([^"]*)"$/
-     */
-    public function jeDeclareLaFileAvecLaCleDeRoutageEnLiaisonAvecLexchange(
-        $queue = null,
-        $routing_key = null,
-        $exchange = null
-    )
-    {
-        $this->channel->queue_declare($queue, false, true, false, false);
-        $this->channel->queue_bind($queue, $exchange, $routing_key);
-    }
-
-    /**
      * @Then /^il doit y avoir un message dans la file "([^"]*)"$/
      */
     public function ilDoitYAvoirUnMessageDansLaFile($queue = null)
     {
-        $response_msg    = $this->channel->basic_get($queue);
+        $app     = self::$silex_app;
+        $channel = $app["rabbit.connection"]['default']->channel();
+
+        $response_msg    = $channel->basic_get($queue);
         $parsed_response = json_decode($response_msg->body);
         if (empty($parsed_response)) {
             throw new \Exception("{$parsed_response}");
@@ -251,7 +181,9 @@ class RabbitContext extends BaseContext
         $body          = file_get_contents($this->results_path . $body);
         $parsed_wanted = json_decode($body);
 
-        $response_msg    = $this->channel->basic_get($queue);
+        $app             = self::$silex_app;
+        $channel         = $app["rabbit.connection"]['default']->channel();
+        $response_msg    = $channel->basic_get($queue);
         $parsed_response = json_decode($response_msg->body);
 
         $this->response[$queue] = $parsed_response;
