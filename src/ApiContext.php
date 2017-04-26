@@ -18,9 +18,9 @@ class ApiContext extends BaseContext
      * Initializes context.
      * Every scenario gets it's own context object.
      */
-    public function __construct()
+    public function __construct($base_url = "http://localhost:8080")
     {
-        $this->base_url = "http://localhost:8080";
+        $this->base_url = $base_url;
         $this->request  = [
             "headers" => [],
             "cookies" => [],
