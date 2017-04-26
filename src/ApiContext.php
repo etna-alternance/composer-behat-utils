@@ -89,6 +89,7 @@ class ApiContext extends BaseContext
             "http_code"    => $response->getStatusCode(),
             "http_message" => Response::$statusTexts[$response->getStatusCode()],
             "body"         => $response->getContent(),
+            "cookies"      => $response->headers->getCookies(),
             "headers"      => array_map(
                 function ($item) {
                     return $item[0];
