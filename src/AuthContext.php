@@ -43,6 +43,42 @@ class AuthContext extends BaseContext
     }
 
     /**
+     * @Given /^je suis logas en tant que "([^"]*)" avec le compte "([^"]*)" et les roles "([^"]*)"$/
+     */
+    public function jeSuisLogasEnTantQueAvecLeCompteEtLesRoles($logas, $login, $roles)
+    {
+         $real_login = [
+            "id"         => 1,
+            "login"      => $login,
+            "logas"      => false,
+            "groups"     => explode(",", $roles),
+            "login_date" => date("Y-m-d H:i:s"),
+        ];
+
+        $identity = [
+            "id"         => 11,
+            "login"      => $logas,
+            "logas"      => $real_login,
+            "groups"     => ["student"],
+            "login_date" => date("Y-m-d H:i:s"),
+        ];
+
+        $identity = base64_encode(json_encode($identity));
+
+        $identity = [
+            "identity"  => $identity,
+            "signature" => self::$rsa->sign($identity),
+        ];
+
+        $api_context = $this->getContext('ETNA\FeatureContext\ApiContext');
+        $request     = $api_context->getRequest();
+
+        // Set le cookie
+        $request["cookies"]["authenticator"] = base64_encode(json_encode($identity));
+        $api_context->setRequest($request);
+    }
+
+    /**
      * @BeforeSuite
      */
     public static function setUpRsa()
