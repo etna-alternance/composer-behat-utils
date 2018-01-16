@@ -7,13 +7,11 @@ use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 
 class HttpApiMockContext extends BaseContext
 {
-    static private $host;
-    static private $port;
+    static private $phiremock;
 
     public function __construct($host = 'localhost', $port = 8080)
     {
-        self::$host = $host;
-        self::$port = $port;
+        self::$phiremock = new Phiremock($host, $port);
     }
 
     /**
@@ -21,8 +19,7 @@ class HttpApiMockContext extends BaseContext
      */
     public static function clearProxyExpectations()
     {
-        $phiremock = new Phiremock(self::$host, self::$port);
-        $phiremock->clearExpectations();
+        self::$phiremock->clearExpectations();
     }
 
     /**
@@ -30,8 +27,6 @@ class HttpApiMockContext extends BaseContext
      */
     public function queLeProxyEffectueUneRequeteSurEtRenvoieLeStatusHTTP($proxy_name, $method, $url, $status_code, $body = null)
     {
-        $phiremock = new Phiremock(self::$host, self::$port);
-
         $response = self::prepareMockResponse($status_code, $body);
 
         $method_name = strtolower($method) . 'Request';
@@ -42,7 +37,7 @@ class HttpApiMockContext extends BaseContext
         )->then($response);
 
         // L'expectation attend la requête, la réponse est envoyée par le serveur phiremock
-        $phiremock->createExpectation($expectation);
+        self::$phiremock->createExpectation($expectation);
     }
 
     /**
@@ -50,8 +45,6 @@ class HttpApiMockContext extends BaseContext
      */
     public function queLeProxyEffectueUneRequeteSurUneUrlQuiContientEtRenvoieLeStatusHTTP($proxy_name, $method, $url, $status_code, $body = null)
     {
-        $phiremock = new Phiremock(self::$host, self::$port);
-
         $response = self::prepareMockResponse($status_code, $body);
 
         $method_name = strtolower($method) . 'Request';
@@ -62,7 +55,7 @@ class HttpApiMockContext extends BaseContext
         )->then($response);
 
         // L'expectation attend la requête, la réponse est envoyée par le serveur phiremock
-        $phiremock->createExpectation($expectation);
+        self::$phiremock->createExpectation($expectation);
     }
 
     /**
@@ -70,8 +63,6 @@ class HttpApiMockContext extends BaseContext
      */
     public function queLeProxyEffectueUneRequeteSurUneUrlQuiMatchEtRenvoieLeStatusHTTP($proxy_name, $method, $url, $status_code, $body = null)
     {
-        $phiremock = new Phiremock(self::$host, self::$port);
-
         $response = self::prepareMockResponse($status_code, $body);
 
         $method_name = strtolower($method) . 'Request';
@@ -82,14 +73,14 @@ class HttpApiMockContext extends BaseContext
         )->then($response);
 
         // L'expectation attend la requête, la réponse est envoyée par le serveur phiremock
-        $phiremock->createExpectation($expectation);
+        self::$phiremock->createExpectation($expectation);
     }
 
     private function prepareMockResponse($status_code, $body)
     {
         $response = \Mcustiel\Phiremock\Client\Utils\Respond::withStatusCode(intval($status_code))->andHeader('Content-Type', 'application/json');
 
-        if ($body !== null) {
+        if (null !== $body) {
             $body = file_get_contents($this->results_path . $body);
 
             if (!$body) {
