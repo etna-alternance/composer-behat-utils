@@ -15,7 +15,9 @@ suites:
             paths:
                 - %paths.base%/Tests/Functional/features
             contexts:
-                - ETNA\FeatureContext\HttpApiMockContext
+                - ETNA\FeatureContext\HttpApiMockContext:
+                    host: '0.0.0.0'
+                    port: '8080'
 ```
 
 - Penser à rajouter l'URL du proxy dans l'env de testing sur
