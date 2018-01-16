@@ -5,7 +5,33 @@ composer-behat-coverage
 
 Composer for php code coverage with behat
 
-Dependencies
+## Pour utiliser les tests mocks sur proxy
+-----------------------
+
+- Ajouter le context des mock dans le behat.yml avec ses paramètres :
+```
+suites:
+        default:
+            paths:
+                - %paths.base%/Tests/Functional/features
+            contexts:
+                - ETNA\FeatureContext\HttpApiMockContext
+```
+
+- Penser à rajouter l'URL du proxy dans l'env de testing sur
+l'adresse et le port du serveur phiremock:
+exemple:
+```
+putenv("CHANGEREQUEST_API_URL=http://localhost:8080");
+```
+
+- Lancer le serveur phiremock avant de lancer les tests:
+```
+./vendor/bin/phiremock -p 8080 -i 0.0.0.0 -d
+```
+
+
+## Dependencies
 -----------------------
 In your composer.json :
 ```
@@ -16,7 +42,7 @@ In your composer.json :
 },
 ```
 
-Install
+## Install
 -----------------------
  * use this behat.yml if you dont have one :
 ```
@@ -83,7 +109,7 @@ wip:
                 tags: @wip
 ```
 
-Run
+##Run
 -----------------------
 
 ```
