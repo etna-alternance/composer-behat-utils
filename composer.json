@@ -14,7 +14,8 @@
         "php": ">=5.5",
         "behat/behat": ">=3.2",
         "guzzlehttp/guzzle": "~6.1",
-        "etna/php-rsa": "~0.2.0"
+        "etna/php-rsa": "~0.2.0",
+        "mcustiel/phiremock": "^1.7"
     },
     "require-dev": {
         "phpunit/php-code-coverage": "~3.0",
