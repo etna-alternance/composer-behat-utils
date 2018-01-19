@@ -59,7 +59,7 @@ class HttpApiMockContext extends BaseContext
     }
 
     /**
-     * @Then /^que le proxy "([^"]*)" effectue une requête (GET|POST|PUT|DELETE|OPTIONS) sur une url qui match "((?:[a-zA-Z0-9,:!\/\.\?\&\=\+_%-]*)|"(?:[^"]+)")" et renvoie le status HTTP (\d+)(?: avec le résultat contenu dans "([^"]*\.json)")?$/
+     * @Then /^que le proxy "([^"]*)" effectue une requête (GET|POST|PUT|DELETE|OPTIONS) sur une url qui match "([^"]*)" et renvoie le status HTTP (\d+)(?: avec le résultat contenu dans "([^"]*\.json)")?$/
      */
     public function queLeProxyEffectueUneRequeteSurUneUrlQuiMatchEtRenvoieLeStatusHTTP($proxy_name, $method, $url, $status_code, $body = null)
     {
