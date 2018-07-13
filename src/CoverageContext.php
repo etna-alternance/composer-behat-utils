@@ -3,13 +3,15 @@
 namespace ETNA\FeatureContext;
 
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
-use PHP_CodeCoverage_Filter;
-use PHP_CodeCoverage;
-use PHP_CodeCoverage_Report_PHP;
-use PHP_CodeCoverage_Report_HTML;
-use PHP_CodeCoverage_Report_Clover;
+use Behat\Behat\Context\Context;
 
-class CoverageContext extends BaseContext
+use SebastianBergmann\CodeCoverage\Filter;
+use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Report\PHP;
+use SebastianBergmann\CodeCoverage\Report\Clover;
+use SebastianBergmann\CodeCoverage\Report\Html\Facade;
+
+class CoverageContext implements Context
 {
     static private $_coverage;
     static private $_coverage_params;
@@ -45,7 +47,7 @@ class CoverageContext extends BaseContext
             mkdir($coverage_path, 0777, true);
         }
 
-        $filter = new PHP_CodeCoverage_Filter();
+        $filter = new Filter();
         if (method_exists($filter, 'addDirectoryToBlacklist') && true === isset(self::$_coverage_params['blacklist']) && true === is_array(self::$_coverage_params['blacklist'])) {
             foreach (self::$_coverage_params['blacklist'] as $blackElem) {
                 $filter->addDirectoryToBlacklist(getcwd() . "/{$blackElem}");
@@ -58,7 +60,7 @@ class CoverageContext extends BaseContext
             }
         }
 
-        self::$_coverage = new PHP_CodeCoverage(null, $filter);
+        self::$_coverage = new CodeCoverage(null, $filter);
         self::$_coverage->start('Behat Test');
     }
 
@@ -71,13 +73,13 @@ class CoverageContext extends BaseContext
 
         $coverage_path = getcwd() . '/' . self::$_coverage_params['coverage_path'];
 
-        $writer = new PHP_CodeCoverage_Report_PHP;
+        $writer = new PHP;
         $writer->process(self::$_coverage, "{$coverage_path}.php");
 
-        $writer = new PHP_CodeCoverage_Report_HTML;
+        $writer = new Facade;
         $writer->process(self::$_coverage, $coverage_path);
 
-        $writer = new PHP_CodeCoverage_Report_Clover();
+        $writer = new Clover();
         $writer->process(self::$_coverage, "{$coverage_path}.clover.xml");
 
         exec("open {$coverage_path}/index.html");

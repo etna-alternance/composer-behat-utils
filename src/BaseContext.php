@@ -5,9 +5,13 @@ namespace ETNA\FeatureContext;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 
-abstract class BaseContext implements Context
+use Behat\Symfony2Extension\Context\KernelDictionary;
+use Behat\Symfony2Extension\Context\KernelAwareContext;
+
+abstract class BaseContext implements Context, KernelAwareContext
 {
-    static protected $silex_app;
+    use KernelDictionary;
+
     static protected $contexts;
     protected $requests_path;
     protected $results_path;
@@ -21,8 +25,7 @@ abstract class BaseContext implements Context
             $environment->getContexts()
         );
 
-        self::$contexts  = $contexts;
-        self::$silex_app = $contexts['ETNA\FeatureContext\MainContext']->getSilexApp();
+        self::$contexts = $contexts;
     }
 
     /**

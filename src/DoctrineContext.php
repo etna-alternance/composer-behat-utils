@@ -41,6 +41,7 @@ class DoctrineContext extends BaseContext
      */
     public function resetProfiler()
     {
+        // Ouais
         self::$query_count += self::$silex_app["orm.profiler"]->currentQuery;
 
         self::$silex_app["orm.profiler"]->queries      = [];
@@ -70,6 +71,7 @@ class DoctrineContext extends BaseContext
      */
     public function beginTransaction()
     {
+        //Ouais
         self::$silex_app["db"]->beginTransaction();
         self::$silex_app["orm.em"]->clear();
     }
@@ -79,6 +81,7 @@ class DoctrineContext extends BaseContext
      */
     public function rollback()
     {
+        //Ouais
         self::$silex_app["db"]->rollback();
     }
 }

@@ -83,7 +83,7 @@ class ApiContext extends BaseContext
         $request->cookies->add($this->request["cookies"]);
         $request->files->add($this->request["files"]);
 
-        $response = self::$silex_app->handle($request, HttpKernelInterface::MASTER_REQUEST, true);
+        $response = $this->getKernel()->handle($request, HttpKernelInterface::MASTER_REQUEST, true);
 
         $result = [
             "http_code"    => $response->getStatusCode(),
@@ -98,7 +98,9 @@ class ApiContext extends BaseContext
             ),
         ];
 
-        $this->getContext('ETNA\FeatureContext\DoctrineContext')->checkMaxQueries($method, $result);
+        if (isset(self::$contexts['ETNA\FeatureContext\DoctrineContext'])) {
+            self::$contexts['ETNA\FeatureContext\DoctrineContext']->checkMaxQueries($method, $result);
+        }
 
         $this->response = $result;
     }
