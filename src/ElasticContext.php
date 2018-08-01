@@ -11,13 +11,7 @@ class ElasticContext extends BaseContext
      */
     public static function indexElasticSearch()
     {
-        $app = include getcwd() . "/public/index.php";
-
-        echo "Creating indexes\n";
-        foreach ($app["elasticsearch.names"] as $name) {
-            $app['elasticsearch.create_index']($name, true);
-            $app["elasticsearch.{$name}.reindex"]();
-        }
+        passthru("php bin/console elasticsearch:index --reset");
     }
 
     /**
@@ -25,8 +19,9 @@ class ElasticContext extends BaseContext
      */
     public function lockElasticSearch()
     {
-        foreach (self::$silex_app["elasticsearch.names"] as $name) {
-            self::lockOrUnlockElasticSearch($name, "lock");
+        $container = $this->getKernel()->getContainer();
+        foreach ($container->getParameter("elasticsearch.names") as $name) {
+            $container->get("elasticsearch.elasticsearch_service")->lock($name);
         }
     }
 
@@ -35,24 +30,9 @@ class ElasticContext extends BaseContext
      */
     public function unlockElasticSearch()
     {
-        foreach (self::$silex_app["elasticsearch.names"] as $name) {
-            self::lockOrUnlockElasticSearch($name, "unlock");
+        $container = $this->getKernel()->getContainer();
+        foreach ($container->getParameter("elasticsearch.names") as $name) {
+            $container->get("elasticsearch.elasticsearch_service")->unlock($name);
         }
-    }
-
-    private static function lockOrUnlockElasticSearch($name, $action)
-    {
-        $action = ("lock" === $action) ? "true" : "false";
-
-        $server = self::$silex_app["elasticsearch.{$name}.server"] . self::$silex_app["elasticsearch.{$name}.index"];
-        exec(
-            "curl -XPUT '" . $server . "/_settings' -d '
-            {
-                \"index\" : {
-                    \"blocks.read_only\" : {$action}
-                }
-            }
-            ' 2> /dev/null"
-        );
     }
 }
