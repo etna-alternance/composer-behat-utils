@@ -32,6 +32,19 @@ class ExceptionContainerContext implements Context
         $this->exception = $exception;
     }
 
+    public function try(\Closure $closure): void
+    {
+        if (null !== $this->exception) {
+            throw new \Exception("Unhandled exception");
+        }
+
+        try {
+            $closure();
+        } catch (\Exception $exception) {
+            $this->exception = $exception;
+        }
+    }
+
     /**
      * Step behat qui check que l'absence d'exception
      *
@@ -42,6 +55,7 @@ class ExceptionContainerContext implements Context
         if (null !== $this->exception) {
             throw new \Exception("Expecting last action to went well {$this->exception->getMessage()}");
         }
+        $this->exception = null;
     }
 
     /**
@@ -71,7 +85,7 @@ class ExceptionContainerContext implements Context
 
         $expected = $this->exception->getMessage();
         if ($message !== $expected) {
-            throw new Exception("Expecting exception to have {$message} but got {$expected}");
+            throw new \Exception("Expecting exception to have {$message} but got {$expected}");
         }
     }
 }

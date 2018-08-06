@@ -95,13 +95,13 @@ class SymfonyTestKernelContext extends BaseContext
      */
     public function jeBootLeKernel()
     {
-        $this->exception = null;
+        $test_kernel = $this->test_kernel;
 
-        try {
-            $this->test_kernel->boot();
-        } catch (\Exception $e) {
-            $this->getContext("ETNA\FeatureContext\ExceptionContainerContext")->setException($e);
-        }
+        $this->getContext("ETNA\FeatureContext\ExceptionContainerContext")->try(
+            function () use ($test_kernel) {
+                $this->test_kernel->boot();
+            }
+        );
     }
 
     /**
@@ -168,12 +168,14 @@ class SymfonyTestKernelContext extends BaseContext
      */
     public function jeForceLInstanciationDuService($service_name)
     {
-        if ($this->test_kernel->getContainer()->has($service_name)) {
-            try {
-                $this->test_kernel->getContainer()->get($service_name);
-            } catch (\Exception $e) {
-                $this->getContext("ETNA\FeatureContext\ExceptionContainerContext")->setException($e);
-            }
+        $test_kernel = $this->test_kernel;
+
+        if ($test_kernel->getContainer()->has($service_name)) {
+            $this->getContext("ETNA\FeatureContext\ExceptionContainerContext")->try(
+                function () use ($test_kernel, $service_name) {
+                    $test_kernel->getContainer()->get($service_name);
+                }
+            );
         } else {
             throw new \Exception("{$service_name} doesn't exists");
         }
