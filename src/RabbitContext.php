@@ -191,4 +191,18 @@ class RabbitContext extends BaseContext
         $this->check($parsed_wanted, $parsed_response, "result", $errors);
         $this->handleErrors($parsed_response, $errors);
     }
+
+    /**
+     * @Then la queue ":queue_name" devrait être vide
+     */
+    public function laQueueDevraitEtreVide($queue_name)
+    {
+        $channel = self::$silex_app["rabbit.connection"]['default']->channel();
+
+        list($queue, $message_count, $consumer_count) = $channel->queue_declare($queue_name, true);
+
+        if (0 !== $message_count) {
+            throw new \Exception("Expecting {$queue_name} to be empty, but found {$message_count} job(s)");
+        }
+    }
 }
