@@ -76,6 +76,30 @@ class HttpApiMockContext extends BaseContext
         self::$phiremock->createExpectation($expectation);
     }
 
+    /**
+     * @Then que le proxy effectue une requête :method sur ":route" et renvoie le status HTTP :status avec l'image contenue dans ":image"
+     */
+    public function queLeProxyEffectueUneRequeteSurEtRenvoieStatusHTTPAvecLImageContenueDans($method, $route, $status, $image)
+    {
+        if (!file_exists($this->results_path . "/" . $image)) {
+            throw new \Exception("Image not found");
+        }
+
+        $response = \Mcustiel\Phiremock\Client\Utils\Respond::withStatusCode(intval($status))
+            ->andHeader('Content-Type', 'image/jpg')
+            ->andBinaryBody(file_get_contents($this->results_path . "/" . $image));
+
+        $method_name = strtolower($method) . 'Request';
+
+        // On set l'url et la méthode attendue par le mock
+        $expectation = Phiremock::on(
+            \Mcustiel\Phiremock\Client\Utils\A::{$method_name}()->andUrl(\Mcustiel\Phiremock\Client\Utils\Is::equalTo($route))
+        )->then($response);
+
+        // L'expectation attend la requête, la réponse est envoyée par le serveur phiremock
+        self::$phiremock->createExpectation($expectation);
+    }
+
     private function prepareMockResponse($status_code, $body)
     {
         $response = \Mcustiel\Phiremock\Client\Utils\Respond::withStatusCode(intval($status_code))->andHeader('Content-Type', 'application/json');
