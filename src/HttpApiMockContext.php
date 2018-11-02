@@ -20,6 +20,7 @@ class HttpApiMockContext extends BaseContext
     public static function clearProxyExpectations()
     {
         self::$phiremock->clearExpectations();
+        self::$phiremock->reset();
     }
 
     /**
@@ -115,5 +116,31 @@ class HttpApiMockContext extends BaseContext
         }
 
         return $response;
+    }
+
+    /**
+     * @Then le serveur de mock devrait avoir traité toutes les requêtes contenues dans ":scenario_file"
+     */
+    public function leServeurDeMockDevraitAvoirTraiteToutesLesRequetesContenuesDans($scenario_file)
+    {
+        $requests = [];
+        $methods  = ['get', 'post', 'put', 'delete'];
+
+        // Oui, on ne peut tout récupérer d'un coup..
+        foreach ($methods as $method) {
+            $function_name = "{$method}Request";
+            $requests      = array_merge($requests, self::$phiremock->listExecutions(
+                \Mcustiel\Phiremock\Client\Utils\A::{$function_name}()
+            ));
+        }
+
+        $body = file_get_contents($this->results_path . $scenario_file);
+        if (!$body) {
+            throw new \Exception("File not found : {$this->results_path}${body}");
+        }
+        $body = json_decode($body);
+
+        $this->check($body, $requests, "result", $errors);
+        $this->handleErrors($requests, $errors);
     }
 }
