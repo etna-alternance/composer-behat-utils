@@ -101,6 +101,26 @@ class HttpApiMockContext extends BaseContext
         self::$phiremock->createExpectation($expectation);
     }
 
+    /**
+     * @Then /^que le proxy "([^"]*)" effectue une requête (GET|POST|PUT|DELETE|OPTIONS) sur "((?:[a-zA-Z0-9,:!\/\.\?\&\=\+_%-]*)|"(?:[^"]+)")" avec comme corps "([^"]*)" et renvoie le status HTTP (\d+)(?: avec le résultat contenu dans "([^"]*\.json)")?$/
+     */
+    public function queLeProxyEffectueUneRequeteSurAvecLeCorpsEtRenvoieLeStatusHTTP($proxy_name, $method, $url, $req_body, $status_code, $body = null)
+    {
+        $response = self::prepareMockResponse($status_code, $body);
+
+        $method_name = strtolower($method) . 'Request';
+
+        // On set l'url et la méthode attendue par le mock
+        $expectation = Phiremock::on(
+            \Mcustiel\Phiremock\Client\Utils\A::{$method_name}()
+                ->andUrl(\Mcustiel\Phiremock\Client\Utils\Is::equalTo($url))
+                ->andBody(\Mcustiel\Phiremock\Client\Utils\Is::equalTo($req_body))
+        )->then($response);
+
+        // L'expectation attend la requête, la réponse est envoyée par le serveur phiremock
+        self::$phiremock->createExpectation($expectation);
+    }
+
     private function prepareMockResponse($status_code, $body)
     {
         $response = \Mcustiel\Phiremock\Client\Utils\Respond::withStatusCode(intval($status_code))->andHeader('Content-Type', 'application/json');
