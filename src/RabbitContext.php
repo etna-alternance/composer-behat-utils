@@ -146,7 +146,7 @@ class RabbitContext extends BaseContext
      */
     public function ilDoitYAvoirUnMessageDansLaFile($queue = null)
     {
-        $channel = $this->getContainer()->get("old_sound_rabbit_mq.connection.default_connection")->channel();
+        $channel = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
 
         $response_msg    = $channel->basic_get($queue);
         $parsed_response = json_decode($response_msg->body);
@@ -167,7 +167,7 @@ class RabbitContext extends BaseContext
         $body          = file_get_contents($this->results_path . $body);
         $parsed_wanted = json_decode($body);
 
-        $channel         = $this->getContainer()->get("old_sound_rabbit_mq.connection.default_connection")->channel();
+        $channel         = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
         $response_msg    = $channel->basic_get($queue);
         $parsed_response = json_decode($response_msg->body);
 
@@ -182,7 +182,7 @@ class RabbitContext extends BaseContext
      */
     public function laQueueDevraitEtreVide($queue_name)
     {
-        $channel = self::$silex_app["rabbit.connection"]['default']->channel();
+        $channel = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
 
         list($queue, $message_count, $consumer_count) = $channel->queue_declare($queue_name, true);
 
