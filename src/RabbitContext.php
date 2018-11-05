@@ -105,6 +105,7 @@ class RabbitContext extends BaseContext
     {
         $channel = $this->getContainer()->get("old_sound_rabbit_mq.{$producer}_producer")->getChannel();
         $message = $channel->basic_get($queue, true);
+        $channel->close();
 
         if (null === $message) {
             throw new \Exception("Queue {$queue} is empty");
@@ -124,11 +125,9 @@ class RabbitContext extends BaseContext
 
         $body     = json_decode(file_get_contents($this->requests_path . $body));
         $producer = $this->getContainer()->get("old_sound_rabbit_mq.{$producer}_producer");
-        if (false === isset($producer)) {
-            throw new \Exception("Producer {$producer} not found");
-        }
 
         $producer->publish(json_encode($body));
+        $producer->getChannel()->close();
     }
 
     /**
@@ -139,6 +138,7 @@ class RabbitContext extends BaseContext
         $consumer = $this->getContainer()->get("old_sound_rabbit_mq.{$consumer}_consumer");
 
         $consumer->consume($nb_jobs);
+        $consumer->getChannel()->close();
     }
 
     /**
@@ -148,8 +148,10 @@ class RabbitContext extends BaseContext
     {
         $channel = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
 
-        $response_msg    = $channel->basic_get($queue);
+        $response_msg    = $channel->basic_get($queue, true, null);
         $parsed_response = json_decode($response_msg->body);
+        $channel->close();
+
         if (empty($parsed_response)) {
             throw new \Exception("{$parsed_response}");
         }
@@ -168,8 +170,10 @@ class RabbitContext extends BaseContext
         $parsed_wanted = json_decode($body);
 
         $channel         = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
+
         $response_msg    = $channel->basic_get($queue);
         $parsed_response = json_decode($response_msg->body);
+        $channel->close();
 
         $this->response[$queue] = $parsed_response;
 
@@ -185,6 +189,8 @@ class RabbitContext extends BaseContext
         $channel = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
 
         list($queue, $message_count, $consumer_count) = $channel->queue_declare($queue_name, true);
+
+        $channel->close();
 
         if (0 !== $message_count) {
             throw new \Exception("Expecting {$queue_name} to be empty, but found {$message_count} job(s)");
