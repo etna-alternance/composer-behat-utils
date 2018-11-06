@@ -11,27 +11,15 @@ class RabbitContext extends BaseContext
     public static $vhosts = ["/test-behat"];
     private $response;
 
-    /**
-     * @BeforeSuite
-     */
-    public static function loadEnv()
-    {
-        if (file_exists('./app/env/' . getenv('APPLICATION_ENV') . '.php')) {
-            require_once './app/env/' . getenv('APPLICATION_ENV') . '.php';
-        }
-    }
-
     private static function getRabbitMqClient()
     {
-        $rmq_url  = getenv("RABBITMQ_URL");
-        $config   = parse_url($rmq_url);
-        $base_uri = "{$config['scheme']}://{$config['host']}:15672";
+        $base_uri = "http://localhost:15672";
 
         return new Client(
             [
                 "base_uri" => $base_uri,
                 "headers"  => ["Content-Type" => "application/json"],
-                "auth"     => [$config["user"], $config["pass"]]
+                "auth"     => ["guest", "guest"]
             ]
         );
     }
@@ -72,6 +60,7 @@ class RabbitContext extends BaseContext
             $client->delete("/api/vhosts/{$vhost}");
         }
     }
+
 
     /**
      * @Given /le producer "([^"]*)" devrait avoir publié un message dans la queue "([^"]*)"$/
@@ -114,8 +103,9 @@ class RabbitContext extends BaseContext
 
     private function fetchMessage($producer, $queue)
     {
-        $channel = self::$silex_app["rabbit.producer"][$producer]->getChannel();
+        $channel = $this->getContainer()->get("old_sound_rabbit_mq.{$producer}_producer")->getChannel();
         $message = $channel->basic_get($queue, true);
+        $channel->close();
 
         if (null === $message) {
             throw new \Exception("Queue {$queue} is empty");
@@ -133,13 +123,11 @@ class RabbitContext extends BaseContext
             throw new \Exception("File not found : {$this->requests_path}${body}");
         }
 
-        $body = json_decode(file_get_contents($this->requests_path . $body));
-        if (false === isset(self::$silex_app['rabbit.producer'][$producer])) {
-            throw new \Exception("Producer {$producer} not found");
-        }
+        $body     = json_decode(file_get_contents($this->requests_path . $body));
+        $producer = $this->getContainer()->get("old_sound_rabbit_mq.{$producer}_producer");
 
-        $routing_key = self::$silex_app['rabbit.producers'][$producer]['queue_options']['routing_keys'][0];
-        self::$silex_app['rabbit.producer'][$producer]->publish(json_encode($body), $routing_key);
+        $producer->publish(json_encode($body));
+        $producer->getChannel()->close();
     }
 
     /**
@@ -147,11 +135,10 @@ class RabbitContext extends BaseContext
      */
     public function jeTraiteJobsAvecLeConsumer($nb_jobs, $consumer)
     {
-        if (false === isset(self::$silex_app['rabbit.consumer'][$consumer])) {
-            throw new \Exception("Consumer {$consumer} not found");
-        }
+        $consumer = $this->getContainer()->get("old_sound_rabbit_mq.{$consumer}_consumer");
 
-        self::$silex_app['rabbit.consumer'][$consumer]->consume($nb_jobs);
+        $consumer->consume($nb_jobs);
+        $consumer->getChannel()->close();
     }
 
     /**
@@ -159,11 +146,12 @@ class RabbitContext extends BaseContext
      */
     public function ilDoitYAvoirUnMessageDansLaFile($queue = null)
     {
-        $app     = self::$silex_app;
-        $channel = $app["rabbit.connection"]['default']->channel();
+        $channel = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
 
-        $response_msg    = $channel->basic_get($queue);
+        $response_msg    = $channel->basic_get($queue, true, null);
         $parsed_response = json_decode($response_msg->body);
+        $channel->close();
+
         if (empty($parsed_response)) {
             throw new \Exception("{$parsed_response}");
         }
@@ -181,14 +169,31 @@ class RabbitContext extends BaseContext
         $body          = file_get_contents($this->results_path . $body);
         $parsed_wanted = json_decode($body);
 
-        $app             = self::$silex_app;
-        $channel         = $app["rabbit.connection"]['default']->channel();
+        $channel         = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
+
         $response_msg    = $channel->basic_get($queue);
         $parsed_response = json_decode($response_msg->body);
+        $channel->close();
 
         $this->response[$queue] = $parsed_response;
 
         $this->check($parsed_wanted, $parsed_response, "result", $errors);
         $this->handleErrors($parsed_response, $errors);
+    }
+
+    /**
+     * @Then la queue ":queue_name" devrait être vide
+     */
+    public function laQueueDevraitEtreVide($queue_name)
+    {
+        $channel = $this->getContainer()->get("old_sound_rabbit_mq.connection.default")->channel();
+
+        list($queue, $message_count, $consumer_count) = $channel->queue_declare($queue_name, true);
+
+        $channel->close();
+
+        if (0 !== $message_count) {
+            throw new \Exception("Expecting {$queue_name} to be empty, but found {$message_count} job(s)");
+        }
     }
 }
