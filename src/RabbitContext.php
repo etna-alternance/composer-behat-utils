@@ -46,6 +46,12 @@ class RabbitContext extends BaseContext
         foreach (self::$vhosts as $vhost) {
             $vhost = str_replace('/', '%2f', $vhost);
 
+            try {
+                $client->delete("/api/vhosts/{$vhost}");
+            } catch (\Exception $e) {
+                // On ignore l'exception car le vhost n'existe peut être pas mais dans le doute on le supprime
+            }
+
             $client->put("/api/vhosts/{$vhost}");
             $client->put(
                 "/api/permissions/{$vhost}/guest",
@@ -57,19 +63,6 @@ class RabbitContext extends BaseContext
                     ]
                 ]
             );
-        }
-    }
-
-    /**
-     * @AfterSuite
-     */
-    public static function deleteVhosts()
-    {
-        $client = self::getRabbitMqClient();
-
-        foreach (self::$vhosts as $vhost) {
-            $vhost = str_replace('/', '%2f', $vhost);
-            $client->delete("/api/vhosts/{$vhost}");
         }
     }
 
