@@ -13,7 +13,9 @@ class RabbitContext extends BaseContext
 
     private static function getRabbitMqClient()
     {
-        $base_uri = "http://localhost:15672";
+        // On récupère les contexts pour choper celui de rabbit, puis regarder si on a renseigné une url qui serait
+        // différente de localhost
+        $base_uri       = getenv("RABBITMQ_URL") ?: "http://localhost:15672";
 
         return new Client(
             [
