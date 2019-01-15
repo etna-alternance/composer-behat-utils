@@ -27,8 +27,33 @@ class SymfonyTestKernelContext extends BaseContext
      */
     public function __construct($bundles = [])
     {
-        $this->test_kernel = null;
-        $this->bundles     = $bundles;
+        $this->test_kernel    = null;
+        $this->bundles        = $bundles;
+        $this->bundles_to_add = $bundles;
+    }
+
+    /**
+     * Pour les prochains steps on considerera qu'on ajoute ces bundles
+     *
+     * @Given j'utilise les bundles
+     */
+    public function jUtiliseLesBundles(\Behat\Gherkin\Node\PyStringNode $bundles)
+    {
+        $bundles = json_decode($bundles->getRaw(), true);
+        if (null === $bundles) {
+            throw new \Exception("json_decode error");
+        }
+        $this->bundles_to_add = $bundles;
+    }
+
+    /**
+     * On remet les bundles par défaut
+     *
+     * @Given je remet les bundles par défaut
+     */
+    public function jeRemetLesBundlesParDefaut()
+    {
+        $this->bundles_to_add = $this->bundles;
     }
 
     /**
@@ -75,7 +100,7 @@ class SymfonyTestKernelContext extends BaseContext
                 parent::shutdown();
             }
         };
-        $this->test_kernel::$additional_bundles = $this->bundles;
+        $this->test_kernel::$additional_bundles = $this->bundles_to_add;
     }
 
     /**
