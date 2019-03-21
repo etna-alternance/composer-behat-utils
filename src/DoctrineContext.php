@@ -1,10 +1,10 @@
 <?php
 
+namespace ETNA\FeatureContext;
+
 use ETNA\FeatureContext\BaseContext;
-use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Behat\Behat\Tester\Exception\PendingException;
-use ETNA\Doctrine\Services\EtnaDoctrineService;
-use function GuzzleHttp\json_encode;
+
 /**
  * This context class contains the definitions of the steps used by the demo
  * feature file. Learn how to get started with Behat and BDD on Behat's website.
@@ -39,7 +39,7 @@ class FeatureContext extends BaseContext
         self::$max_queries = $nb;
     }
 
-     /**
+    /**
      * @BeforeScenario
      */
     public function beginTransaction()
