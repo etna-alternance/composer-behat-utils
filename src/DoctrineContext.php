@@ -21,6 +21,15 @@ class FeatureContext extends BaseContext
         self::$max_queries = $max_queries;
     }
 
+    /**
+     * @BeforeSuite
+     */
+    public static function dump()
+    {
+        passthru("vendor/doctrine/orm/bin/doctrine orm:schema-tool:drop --force --full-database");
+        passthru("./bin/dump ./Tests/Data/test*.sql");
+    }
+
     public function checkMaxQueries($response)
     {
         $actual_queries_count = $response["headers"]["x-orm-profiler-count"];
