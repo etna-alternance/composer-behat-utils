@@ -3,7 +3,6 @@
 namespace ETNA\FeatureContext;
 
 use ETNA\FeatureContext\BaseContext;
-use Behat\Behat\Tester\Exception\PendingException;
 
 /**
  * This context class contains the definitions of the steps used by the demo
@@ -36,7 +35,7 @@ class FeatureContext extends BaseContext
         self::$query_count   += $actual_queries_count;
         if ($actual_queries_count >= self::$max_queries) {
             $this->getContext("ETNA\FeatureContext\ExceptionContainerContext")
-            ->setException(new PendingException("Too many SQL queries ({$response["headers"]["x-orm-profiler-count"]})"));
+            ->setException(new \Exception("Too many SQL queries ({$response["headers"]["x-orm-profiler-count"]})"));
         }
     }
 
