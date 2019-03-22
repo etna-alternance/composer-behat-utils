@@ -10,7 +10,7 @@ use ETNA\FeatureContext\BaseContext;
  *
  * @see http://behat.org/en/latest/quick_start.html
  */
-class FeatureContext extends BaseContext
+class DoctrineContext extends BaseContext
 {
     static private $max_queries;
     static private $query_count = 0;
