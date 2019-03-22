@@ -99,7 +99,7 @@ class ApiContext extends BaseContext
         ];
 
         if (isset(self::$contexts['ETNA\FeatureContext\DoctrineContext'])) {
-            self::$contexts['ETNA\FeatureContext\DoctrineContext']->checkMaxQueries($method, $result);
+            self::$contexts['ETNA\FeatureContext\DoctrineContext']->checkMaxQueries($result);
         }
 
         $this->response = $result;
