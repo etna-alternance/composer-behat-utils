@@ -2,12 +2,18 @@
 
 namespace ETNA\FeatureContext;
 
-use Behat\Behat\Tester\Exception\PendingException;
+use ETNA\FeatureContext\BaseContext;
 
+/**
+ * This context class contains the definitions of the steps used by the demo
+ * feature file. Learn how to get started with Behat and BDD on Behat's website.
+ *
+ * @see http://behat.org/en/latest/quick_start.html
+ */
 class DoctrineContext extends BaseContext
 {
+    static private $max_queries;
     static private $query_count = 0;
-    static private $max_queries = 10;
 
     public function __construct($max_queries)
     {
@@ -23,39 +29,14 @@ class DoctrineContext extends BaseContext
         passthru("./bin/dump ./Tests/Data/test*.sql");
     }
 
-    public function checkMaxQueries($method, $response)
+    public function checkMaxQueries($response)
     {
-        if (in_array($method, ['GET', 'PUT', 'DELETE']) && $response["headers"]["x-orm-profiler-count"] >= self::$max_queries) {
-            $queries = [];
-            foreach (json_decode($response["headers"]["x-orm-profiler-queries"]) as $query) {
-                $queries[md5($query->sql)]["sql"]      = $query->sql;
-                $queries[md5($query->sql)]["params"][] = $query->params;
-            }
-
-            throw new PendingException("Too many SQL queries ({$response["headers"]["x-orm-profiler-count"]})");
+        $actual_queries_count = $response["headers"]["x-orm-profiler-count"];
+        self::$query_count   += $actual_queries_count;
+        if ($actual_queries_count >= self::$max_queries) {
+            $this->getContext("ETNA\FeatureContext\ExceptionContainerContext")
+            ->setException(new \Exception("Too many SQL queries ({$response["headers"]["x-orm-profiler-count"]})"));
         }
-    }
-
-    /**
-     * @BeforeScenario
-     */
-    public function resetProfiler()
-    {
-        // Ouais
-        self::$query_count += self::$silex_app["orm.profiler"]->currentQuery;
-
-        self::$silex_app["orm.profiler"]->queries      = [];
-        self::$silex_app["orm.profiler"]->currentQuery = 0;
-
-        self::$max_queries = $this->getParameter("max_queries");
-    }
-
-    /**
-     * @AfterSuite
-     */
-    public static function showQueryCount()
-    {
-        echo "\n# total queries : ", self::$query_count, "\n";
     }
 
     /**
@@ -71,9 +52,9 @@ class DoctrineContext extends BaseContext
      */
     public function beginTransaction()
     {
-        //Ouais
-        self::$silex_app["db"]->beginTransaction();
-        self::$silex_app["orm.em"]->clear();
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em->getConnection()->beginTransaction();
+        $em->clear();
     }
 
     /**
@@ -81,7 +62,7 @@ class DoctrineContext extends BaseContext
      */
     public function rollback()
     {
-        //Ouais
-        self::$silex_app["db"]->rollback();
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em->getConnection()->rollback();
     }
 }
