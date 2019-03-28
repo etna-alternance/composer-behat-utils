@@ -3,6 +3,8 @@
 namespace ETNA\FeatureContext;
 
 use ETNA\FeatureContext\BaseContext;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * This context class contains the definitions of the steps used by the demo
@@ -14,6 +16,7 @@ class DoctrineContext extends BaseContext
 {
     static private $max_queries;
     static private $query_count = 0;
+    static private $dumped      = false;
 
     public function __construct($max_queries)
     {
@@ -21,12 +24,28 @@ class DoctrineContext extends BaseContext
     }
 
     /**
-     * @BeforeSuite
+     * @BeforeScenario
+     * Dump la base de donnée avant le premier scénario après on ignore.
      */
-    public static function dump()
+    public function dump()
     {
-        passthru("vendor/doctrine/orm/bin/doctrine orm:schema-tool:drop --force --full-database");
-        passthru("./bin/dump ./Tests/Data/test*.sql");
+        if (!self::$dumped) {
+            //On get les params de Doctrine
+            $params = $this->getContainer()->get('doctrine')->getManager()->getConnection()->getParams();
+
+            //On crée une console application pour lancer la commande
+            $application = new Application($this->getKernel());
+            $application->setAutoExit(false);
+            $input = new ArrayInput([
+                'command'    => 'test:dump',
+                '-u'         => $params['user'],
+                '--host'     => $params['host'],
+                '--password' => $params['password'],
+            ]);
+
+            $application->run($input);
+            self::$dumped = true;
+        }
     }
 
     public function checkMaxQueries($response)
