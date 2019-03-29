@@ -41,6 +41,7 @@ class DoctrineContext extends BaseContext
                 '-u'         => $params['user'],
                 '--host'     => $params['host'],
                 '--password' => $params['password'],
+                '--database' => $params['dbname']
             ]);
 
             $application->run($input);
