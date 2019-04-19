@@ -98,7 +98,7 @@ class ApiContext extends BaseContext
             ),
         ];
 
-        if (isset(self::$contexts['ETNA\FeatureContext\DoctrineContext'])) {
+        if (isset(self::$contexts['ETNA\FeatureContext\DoctrineContext']) && 'OPTIONS' !== $method) {
             self::$contexts['ETNA\FeatureContext\DoctrineContext']->checkMaxQueries($result);
         }
 
@@ -157,6 +157,24 @@ class ApiContext extends BaseContext
             throw new \Exception("Invalid response");
         }
         $this->data = $json;
+    }
+
+    /**
+     * @Given je sette le header :header_name à la valeur :header_value
+     */
+    public function jeSetteLeHeaderAlAValeur($header_name, $header_value)
+    {
+        $this->request["headers"][$header_name] = $header_value;
+    }
+
+    /**
+     * @Given je supprime le header :header_name
+     */
+    public function jeSupprimeLeHeader()
+    {
+        if (isset($this->request["headers"][$header_name])) {
+            unset($this->request["headers"][$header_name]);
+        }
     }
 
     /**
