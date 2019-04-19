@@ -170,7 +170,7 @@ class ApiContext extends BaseContext
     /**
      * @Given je supprime le header :header_name
      */
-    public function jeSupprimeLeHeader()
+    public function jeSupprimeLeHeader($header_name)
     {
         if (isset($this->request["headers"][$header_name])) {
             unset($this->request["headers"][$header_name]);
