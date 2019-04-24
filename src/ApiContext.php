@@ -92,8 +92,6 @@ class ApiContext extends BaseContext
             $time_profiler->stopTimeProfiler();
         }
 
-
-
         $result = [
             "http_code"    => $response->getStatusCode(),
             "http_message" => Response::$statusTexts[$response->getStatusCode()],
