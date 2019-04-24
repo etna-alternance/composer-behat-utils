@@ -8,20 +8,24 @@ use Behat\Behat\Tester\Exception\PendingException;
 
 class TimeProfilerContext implements Context
 {
-    static private $max_time  = 100;
-    static private $last_time = null;
+    static private $max_time = 100;
+
+    private $start = 0;
+    private $end = 0;
 
     public function __construct($max_time)
     {
         self::$max_time = $max_time;
     }
 
-    /**
-     * @BeforeScenario
-     */
-    public function beginTimeProfiler()
+    public function setStart()
     {
-        self::$last_time = round(microtime(true) * 1000);
+        $this->start = microtime(true);
+    }
+
+    public function setEnd()
+    {
+        $this->end = microtime(true);
     }
 
     /**
@@ -34,8 +38,7 @@ class TimeProfilerContext implements Context
             return;
         }
 
-        $now  = round(microtime(true) * 1000);
-        $diff = $now - self::$last_time;
+        $diff = round(($this->end - $this->start) * 1000);
         if ($diff > self::$max_time) {
             echo "{$scope->getFeature()->getFile()}:{$scope->getScenario()->getLine()}\n";
             throw new PendingException("Request too long {$diff}ms > " . self::$max_time . "ms \n");
