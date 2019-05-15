@@ -83,7 +83,14 @@ class ApiContext extends BaseContext
         $request->cookies->add($this->request["cookies"]);
         $request->files->add($this->request["files"]);
 
+        $time_profiler = self::$contexts['ETNA\FeatureContext\TimeProfilerContext'];
+
+        isset($time_profiler) && $time_profiler->start();
         $response = $this->getKernel()->handle($request, HttpKernelInterface::MASTER_REQUEST, true);
+
+        if (!isset(self::$contexts['ETNA\FeatureContext\CoverageContext']) && isset($time_profiler)) {
+            $time_profiler->stopTimeProfiler();
+        }
 
         $result = [
             "http_code"    => $response->getStatusCode(),

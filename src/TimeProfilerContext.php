@@ -8,37 +8,38 @@ use Behat\Behat\Tester\Exception\PendingException;
 
 class TimeProfilerContext implements Context
 {
-    static private $max_time  = 100;
-    static private $last_time = null;
+    private $max_time = 100;
+    private $start    = 0.0;
+    private $end      = 0.0;
+    private $failure  = null;
 
     public function __construct($max_time)
     {
-        self::$max_time = $max_time;
+        $this->max_time = $max_time;
     }
 
-    /**
-     * @BeforeScenario
-     */
-    public function beginTimeProfiler()
+    public function start()
     {
-        self::$last_time = round(microtime(true) * 1000);
+        $this->failure = null;
+        $this->start   = microtime(true);
     }
 
-    /**
-     * @AfterScenario
-     */
-    public function stopTimeProfiler(AfterScenarioScope $scope)
+    public function stopTimeProfiler()
     {
-        $has_coverage = $scope->getEnvironment()->hasContextClass("ETNA\FeatureContext\CoverageContext");
-        if (true === $has_coverage) {
-            return;
+        $diff = round((microtime(true) - $this->start) * 1000);
+        if ($diff > $this->max_time) {
+            $this->failure = $diff;
         }
+    }
 
-        $now  = round(microtime(true) * 1000);
-        $diff = $now - self::$last_time;
-        if ($diff > self::$max_time) {
+    /**
+     * @afterScenario
+     */
+    public function afterScenarioCheck(AfterScenarioScope $scope)
+    {
+        if (null !== $this->failure) {
             echo "{$scope->getFeature()->getFile()}:{$scope->getScenario()->getLine()}\n";
-            throw new PendingException("Request too long {$diff}ms > " . self::$max_time . "ms \n");
+            throw new PendingException("Request too long {$this->failure}ms > {$this->max_time}ms\n");
         }
     }
 }
