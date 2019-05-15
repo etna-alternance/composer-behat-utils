@@ -9,9 +9,9 @@ use Behat\Behat\Tester\Exception\PendingException;
 class TimeProfilerContext implements Context
 {
     private $max_time = 100;
-    private $start = 0.0;
-    private $end = 0.0;
-    private $failure = null;
+    private $start    = 0.0;
+    private $end      = 0.0;
+    private $failure  = null;
 
     public function __construct($max_time)
     {
@@ -39,7 +39,7 @@ class TimeProfilerContext implements Context
     {
         if (null !== $this->failure) {
             echo "{$scope->getFeature()->getFile()}:{$scope->getScenario()->getLine()}\n";
-            throw new PendingException("Request too long {$this->failure}ms > " . $this->max_time . "ms\n");
+            throw new PendingException("Request too long {$this->failure}ms > {$this->max_time}ms\n");
         }
     }
 }
