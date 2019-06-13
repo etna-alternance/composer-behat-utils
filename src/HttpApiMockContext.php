@@ -107,6 +107,7 @@ class HttpApiMockContext extends BaseContext
     public function queLeProxyEffectueUneRequeteSurAvecLeCorpsEtRenvoieLeStatusHTTP($proxy_name, $method, $url, $req_body, $status_code, $body = null)
     {
         $response = self::prepareMockResponse($status_code, $body);
+        $req_body = self::prepareReqBody($req_body);
 
         $method_name = strtolower($method) . 'Request';
 
@@ -119,6 +120,16 @@ class HttpApiMockContext extends BaseContext
 
         // L'expectation attend la requête, la réponse est envoyée par le serveur phiremock
         self::$phiremock->createExpectation($expectation);
+    }
+
+    private function prepareReqBody($req_body) {
+        $body = trim(file_get_contents($this->requests_path . $req_body));
+
+        if (!$body) {
+            throw new \Exception("File not found : {$this->requests_path}${body}");
+        }
+
+        return $body;
     }
 
     private function prepareMockResponse($status_code, $body)
