@@ -140,6 +140,7 @@ class RabbitContext extends BaseContext
         $consumer = $this->getContainer()->get("old_sound_rabbit_mq.{$consumer}_consumer");
 
         $consumer->consume($nb_jobs);
+        $consumer->resetConsumed();
         $consumer->getChannel()->close();
     }
 
