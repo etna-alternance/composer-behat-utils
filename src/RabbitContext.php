@@ -145,6 +145,7 @@ class RabbitContext extends BaseContext
         }
 
         self::$silex_app['rabbit.consumer'][$consumer]->consume($nb_jobs);
+        self::$silex_app['rabbit.consumer'][$consumer]->resetConsumed();
     }
 
     /**
