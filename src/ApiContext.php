@@ -121,7 +121,7 @@ class ApiContext extends BaseContext
             $filename = $file["file"];
             $path     = realpath("{$this->requests_path}/{$file["file"]}");
 
-            $this->request["files"][$file["name"]] = new UploadedFile($path, $filename);
+            $this->request["files"][$file["name"]] = new UploadedFile($path, $filename, mime_content_type($path), filesize($path), null, true);
         }
     }
 
