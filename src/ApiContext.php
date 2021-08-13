@@ -342,4 +342,17 @@ class ApiContext extends BaseContext
             throw new \Exception("Files are not the same");
         }
     }
+
+    /**
+     * @Then je trie le résultat par :field
+     */
+    public function jeTrieLeResultatPar($field)
+    {
+        if (!is_array($this->data)) {
+            throw new \Exception("Response is not an array");
+        }
+        usort($this->data, function($a, $b) use ($field) {
+            return $a->$field <=> $b->$field;
+        });
+    }
 }
