@@ -18,7 +18,7 @@ class RabbitContext extends BaseContext
     {
         $env_file = getenv('APPLICATION_ENV') . '.php';
         foreach ([ "./app/Env/", "./app/env/" ] as $env_dir) {
-            $path = $env_dir . $env_file
+            $path = $env_dir . $env_file;
             if (file_exists($path)) {
                 require_once($path);
             }
