@@ -16,8 +16,12 @@ class RabbitContext extends BaseContext
      */
     public static function loadEnv()
     {
-        if (file_exists('./app/env/' . getenv('APPLICATION_ENV') . '.php')) {
-            require_once './app/env/' . getenv('APPLICATION_ENV') . '.php';
+        $env_file = getenv('APPLICATION_ENV') . '.php';
+        foreach ([ "./app/Env/", "./app/env/" ] as $env_dir) {
+            $path = $env_dir . $env_file
+            if (file_exists($path)) {
+                require_once($path);
+            }
         }
     }
 
