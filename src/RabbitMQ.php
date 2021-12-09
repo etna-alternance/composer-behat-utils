@@ -8,10 +8,14 @@ trait RabbitMQ
 {
     static private function getRabbitMqClient()
     {
+        $base_url = getenv("RABBITMQ_MGMT_URL") ?: "http://localhost:15672";
+        $user = getenv("RABBITMQ_USER") ?: "guest";
+        $password = getenv("RABBITMQ_PASS") ?: "guest"; 
+
         return new Client([
-            "base_uri" => "http://127.0.0.1:15672",
+            "base_uri" => $base_url,
             "headers" => ["Content-Type" => "application/json"],
-            "auth"    => ["guest", "guest"]
+            "auth"    => [$user, $password]
         ]);
     }
 
