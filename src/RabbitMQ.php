@@ -49,11 +49,21 @@ trait RabbitMQ
      */
     static public function deleteVhosts()
     {
-        $client = self::getRabbitMqClient();
-
-        foreach (self::$vhosts as $vhost) {
-            $vhost = str_replace('/', '%2f', $vhost);
-            $client->delete("/api/vhosts/{$vhost}");
-        }
+        // 2022-04: we do not want to delete the vhost(s) from inside the
+        // test-suite. It has unwanted side-effect: when a vhost is deleted,
+        // rabbitmq closes all client connections connected to that vhost.
+        // Then later when php garbage collects the rabbitmq clients and they
+        // try to properly close connections, we got exceptions that causes
+        // the test-suite to fail and exit(-1).
+        // The proper way would be to close all connections we delete the
+        // vhost, but their lifecycle is managed outside the test-suite,
+        // and it is way easier to just delete the vhosts outside the
+        // test-suite, once behat exits.
+        
+        // $client = self::getRabbitMqClient();
+        // foreach (self::$vhosts as $vhost) {
+        //     $vhost = str_replace('/', '%2f', $vhost);
+        //     $client->delete("/api/vhosts/{$vhost}");
+        // }
     }
 }
