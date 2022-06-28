@@ -355,4 +355,16 @@ class ApiContext extends BaseContext
             return $a->$field <=> $b->$field;
         });
     }
+
+    /**
+     * @Then /^le csv devrait être équivalent au fichier csv "(.*)"$/
+     */
+    public function leCsvDevraitEtreEquivalentAuFichierCsv($filename)
+    {
+        $filepath = realpath($this->results_path . "/" . $filename);
+        $csv_result = str_getcsv(preg_replace('/\r\n?/', "\n",$this->response['body']), ';');
+        $csv_expected = str_getcsv(preg_replace('/\r\n?/', "\n",file_get_contents($filepath)), ';');
+        $this->check($csv_result, $csv_expected, 'results', $errors);
+        $this->handleErrors($csv_expected, $errors);
+    }
 }
