@@ -29,6 +29,9 @@ trait RabbitMQ
         foreach (self::$vhosts as $vhost) {
             $vhost = str_replace('/', '%2f', $vhost);
 
+	    // delete the vhost if it exists. See the comment bellow in deleteVhosts()
+            $client->delete("/api/vhosts/{$vhost}", [ 'http_errors' => false ]);
+
             $client->put("/api/vhosts/{$vhost}");
 
             $client->put(
